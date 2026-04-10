@@ -35,16 +35,6 @@ export default function HeroSection() {
 
       {/* ───── Content ───── */}
       <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col items-center justify-center px-6 pt-32 pb-32 md:px-16 md:pt-40 md:pb-40">
-        <Reveal delay={100}>
-          <div className="mb-10 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/[0.06] px-5 py-2 text-[10px] font-medium uppercase tracking-[0.22em] text-white/85 backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-200/70" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-200" />
-            </span>
-            A movement for human connection
-          </div>
-        </Reveal>
-
         <Reveal delay={250}>
           <h1 className="text-center text-[clamp(2.6rem,8.4vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.025em] text-white">
             <span className="block">Igniting</span>

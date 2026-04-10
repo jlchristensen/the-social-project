@@ -4,7 +4,7 @@ const stats = [
   { value: "67%", label: "of Gen Z classify as lonely — the highest of any generation" },
   { value: "34m", label: "average daily time Americans spend socializing in 2024" },
   { value: "5h", label: "average daily social media time for U.S. teens" },
-  { value: "1 in 4", label: "people worldwide feel lonely — over a billion" },
+  { value: "1 in 4", label: "people worldwide feel lonely" },
 ];
 
 export default function StatsSection() {
