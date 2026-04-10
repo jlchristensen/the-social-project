@@ -1,10 +1,10 @@
 import Reveal from "@/components/ui/Reveal";
 
 const stats = [
-  { value: "50%", label: "of U.S. adults experience measurable loneliness" },
-  { value: "7h", label: "average daily screen time per person" },
-  { value: "70%", label: "drop in time young adults spend with friends since 2003" },
-  { value: "5×", label: "increase in men reporting zero close friends since 1990" },
+  { value: "67%", label: "of Gen Z classify as lonely — the highest of any generation" },
+  { value: "34m", label: "average daily time Americans spend socializing in 2024" },
+  { value: "5h", label: "average daily social media time for U.S. teens" },
+  { value: "1 in 4", label: "people worldwide feel lonely — over a billion" },
 ];
 
 export default function StatsSection() {

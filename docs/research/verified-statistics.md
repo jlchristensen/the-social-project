@@ -8,29 +8,38 @@ This document tracks every statistic used on The Social Project website, its sou
 
 ## Stats Used on the Homepage (StatsSection)
 
-### "50% of U.S. adults experience measurable loneliness"
-- **Source:** U.S. Surgeon General's Advisory on the Healing Effects of Social Connection and Community (May 2023)
-- **Details:** Approximately 50% of U.S. adults reported experiencing measurable levels of loneliness even before the COVID-19 pandemic. Young adults (18-34) consistently register the highest loneliness scores of any age group.
-- **Link:** https://www.hhs.gov/about/news/2023/05/03/new-surgeon-general-advisory-raises-alarm-about-devastating-impact-epidemic-loneliness-isolation-united-states.html
+### "67% of Gen Z classify as lonely — the highest of any generation"
+- **Source:** Cigna 2025 Loneliness in America Report (based on 2024 Vitality in America study)
+- **Details:** 67% of Gen Z classify as lonely on the UCLA Loneliness Scale — the highest of any generation. Millennials: 65%, Gen X: 60%, Baby Boomers: 44%. Survey of 7,500 U.S. adults.
+- **Link:** https://newsroom.thecignagroup.com/loneliness-in-america
 - **Verified:** Yes
 
-### "7h average daily screen time per person"
-- **Source:** Multiple surveys including eMarketer, DemandSage, and autonomous.ai compilations (2025)
-- **Details:** U.S. adults average 7 hours and 3 minutes of screen time per day. This figure has been stable since ~2021.
-- **Link:** https://demandsage.com/screen-time-statistics
+### "34 min average daily time Americans spend socializing in 2024"
+- **Source:** Bureau of Labor Statistics, American Time Use Survey 2024 (released June 2025)
+- **Details:** Americans spent an average of 0.56 hours (≈34 minutes) per day socializing and communicating during leisure time. For context, young adults (15-24) spent ~150 min/day with friends in 2003. Employed individuals averaged 0.53 hours; non-employed averaged 0.68 hours.
+- **Link:** https://www.bls.gov/news.release/atus.t11a.htm
 - **Verified:** Yes
 
-### "70% drop in time young adults spend with friends since 2003"
-- **Source:** American Time Use Survey data, cited in the Surgeon General's Advisory (2023)
-- **Details:** For people ages 15 to 24, time spent in person with friends fell from approximately 150 minutes per day in 2003 to 40 minutes per day in 2020 — a nearly 70% decline.
-- **Link:** https://www.hhs.gov/sites/default/files/sg-social-connection-graphic-trends.pdf
+### "5 hrs average daily social media time for U.S. teens"
+- **Source:** World Happiness Report 2026, Chapter: "Social media is harming adolescents at a scale large enough to cause changes at the population level"
+- **Details:** The average U.S. teen spends nearly 5 hours per day on social media. One-quarter of 13-14-year-olds spend 7+ hours daily. The report presents evidence that social media adoption in the early 2010s contributed to population-level increases in mental illness by the mid-2010s.
+- **Link:** https://worldhappiness.report/ed/2026/social-media-is-harming-adolescents-at-a-scale-large-enough-to-cause-changes-at-the-population-level/
 - **Verified:** Yes
 
-### "5x increase in men reporting zero close friends since 1990"
-- **Source:** Survey Center on American Life (American Enterprise Institute), May 2021
-- **Details:** The percentage of men without any close friends jumped from 3% in 1990 to 15% in 2021 — a fivefold increase. Men with at least six close friends dropped from 55% to 27% over the same period.
-- **Link:** https://www.americansurveycenter.org/research/the-state-of-american-friendship-change-challenges-and-loss
+### "1 in 4 people worldwide feel lonely — over a billion"
+- **Source:** Meta-Gallup State of Social Connections study (2023)
+- **Details:** 24% of the global population reported feeling "very lonely" or "fairly lonely," representing more than 1 billion people. Survey of ~1,000 participants per country across 142 countries. Young adults (19-29) report the highest rates globally at 27%.
+- **Link:** https://news.gallup.com/opinion/gallup/512618/almost-quarter-world-feels-lonely.aspx
 - **Verified:** Yes
+
+### Previously Used Homepage Stats (Replaced April 2026)
+
+| Original Stat | Reason for Replacement | Source Was |
+|---|---|---|
+| "50% of U.S. adults experience measurable loneliness" | Still accurate, but replaced with Gen Z-specific stat (67%) that's more recent and speaks to target audience | Surgeon General Advisory, 2023 |
+| "7h average daily screen time per person" | Replaced with teen social media time (5h) — more specific and from a stronger source | Multiple screen time surveys, 2025 |
+| "70% drop in time spent with friends since 2003" | Replaced with 34 min/day socializing — same underlying data (ATUS) but updated to 2024 and more concrete | ATUS via Surgeon General, 2020 data |
+| "5× increase in men with zero close friends since 1990" | Replaced with global loneliness stat (1 in 4) — broadens scope beyond U.S. men | AEI Survey Center, 2021 |
 
 ---
 
