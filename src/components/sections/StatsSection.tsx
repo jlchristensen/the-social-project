@@ -1,10 +1,10 @@
 import Reveal from "@/components/ui/Reveal";
 
 const stats = [
-  { value: "61%", label: "of young adults report serious loneliness" },
+  { value: "50%", label: "of U.S. adults experience measurable loneliness" },
   { value: "7h", label: "average daily screen time per person" },
-  { value: "30%", label: "drop in time spent with friends since 2014" },
-  { value: "1 in 3", label: "adults say they have no close friends" },
+  { value: "70%", label: "drop in time young adults spend with friends since 2003" },
+  { value: "5×", label: "increase in men reporting zero close friends since 1990" },
 ];
 
 export default function StatsSection() {

@@ -29,7 +29,7 @@ In the age of screens, we've lost our comfort with casual conversation. We'd rat
 
 ## The Science Behind Connection
 
-Research from Harvard shows that people who engage in regular face-to-face social interactions report 30% higher life satisfaction. Small talk isn't just pleasant — it's essential for our wellbeing.
+The Harvard Study of Adult Development — the longest study of adult life ever conducted, spanning over 85 years — found that the quality of your relationships is the single strongest predictor of happiness and health. People who were most satisfied in their relationships at age 50 were the healthiest at age 80. Small talk isn't just pleasant — it's the entry point to the connections that shape our entire lives.
 
 ## Five Ways to Get Better Today
 
@@ -121,17 +121,17 @@ You are enough, exactly as you are.`,
     readTime: "6 min read",
     category: "Research",
     image: "/images/blog/loneliness.jpg",
-    content: `The U.S. Surgeon General called it an epidemic. Research shows loneliness is as harmful as smoking 15 cigarettes a day. And it's hitting young adults the hardest.
+    content: `In 2023, the U.S. Surgeon General declared loneliness and social isolation a public health crisis in America. A landmark meta-analysis found that lacking social connection carries health risks comparable to smoking 15 cigarettes a day (Holt-Lunstad, 2010). And it's hitting young adults the hardest.
 
 ## The Numbers
 
-- 61% of young adults report feeling seriously lonely
-- The average American hasn't made a new close friend in 5 years
-- Time spent with friends has dropped 30% since 2014
+- About half of U.S. adults report experiencing measurable loneliness — with young adults consistently scoring the highest of any age group (Surgeon General Advisory, 2023)
+- For people ages 15 to 24, time spent in person with friends fell from 150 minutes per day in 2003 to just 40 minutes in 2020 — a nearly 70% drop (American Time Use Survey)
+- The number of men with at least six close friends has been cut in half since 1990 — from 55% to 27% (Survey Center on American Life, 2021)
 
 ## Why It's Happening
 
-It's not just about phones. It's a perfect storm of remote work, social media comparison, geographic mobility, and a culture that prizes independence over interdependence.
+It's not just about phones. It's a perfect storm of remote work, social media comparison, geographic mobility, and a culture that prizes independence over interdependence. Americans are marrying later, spending more time with children, working longer hours, and moving more often — all of which crowd out friendships.
 
 ## What We Can Do
 
