@@ -41,7 +41,7 @@ export default function HeroSection() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-200/70" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-200" />
             </span>
-            A movement for human connection
+            A movement for human connection test
           </div>
         </Reveal>
 
