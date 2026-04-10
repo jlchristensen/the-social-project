@@ -36,7 +36,7 @@ const entries = [
 
 export default function MissionSection() {
   return (
-    <section className="relative overflow-hidden bg-[#f4efe3] py-28 md:py-36">
+    <section className="relative overflow-hidden bg-brand-50 py-28 md:py-36">
       {/* faint blueprint grid */}
       <div
         aria-hidden
