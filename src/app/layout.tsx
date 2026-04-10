@@ -25,6 +25,30 @@ export const metadata: Metadata = {
   title: "The Social Project — Igniting Human Connection",
   description:
     "A community dedicated to igniting human connection and inspiring authenticity. Resources, stories, and tools to help you build real relationships.",
+  metadataBase: new URL("https://main.d1jaykgbbddd26.amplifyapp.com"),
+  openGraph: {
+    title: "The Social Project — Igniting Human Connection",
+    description:
+      "A community dedicated to igniting human connection and inspiring authenticity.",
+    url: "https://main.d1jaykgbbddd26.amplifyapp.com",
+    siteName: "The Social Project",
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "The Social Project — Igniting Human Connection",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Social Project — Igniting Human Connection",
+    description:
+      "A community dedicated to igniting human connection and inspiring authenticity.",
+    images: ["/images/og-image.jpg"],
+  },
 };
 
 export default function RootLayout({
