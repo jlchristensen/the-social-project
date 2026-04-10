@@ -2,15 +2,40 @@
 
 import { useState } from "react";
 
+type FormState = "idle" | "loading" | "success" | "error";
+
 export default function CTASection() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [state, setState] = useState<FormState>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubmitted(true);
+    if (!email) return;
+
+    setState("loading");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setState("error");
+        setErrorMsg(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      setState("success");
       setEmail("");
+    } catch {
+      setState("error");
+      setErrorMsg("Could not connect. Please check your internet and try again.");
     }
   };
 
@@ -52,7 +77,7 @@ export default function CTASection() {
               stories delivered to your inbox. No spam, just genuine content.
             </p>
 
-            {submitted ? (
+            {state === "success" ? (
               <div className="mt-12 inline-flex items-center gap-3 rounded-full border border-brand-200/40 bg-brand-200/15 px-6 py-3.5 text-brand-100 backdrop-blur-md">
                 <svg
                   className="h-5 w-5"
@@ -76,24 +101,57 @@ export default function CTASection() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 rounded-full bg-transparent px-6 py-3 text-sm text-white placeholder-white/40 outline-none"
+                  disabled={state === "loading"}
+                  className="flex-1 rounded-full bg-transparent px-6 py-3 text-sm text-white placeholder-white/40 outline-none disabled:opacity-50"
                 />
                 <button
                   type="submit"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-brand-700 transition-all duration-300 hover:bg-brand-50 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.5)]"
+                  disabled={state === "loading"}
+                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-brand-700 transition-all duration-300 hover:bg-brand-50 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.5)] disabled:opacity-60 disabled:hover:bg-white"
                 >
-                  Subscribe
-                  <svg
-                    className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
-                  </svg>
+                  {state === "loading" ? (
+                    <>
+                      <svg
+                        className="h-3.5 w-3.5 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      Joining...
+                    </>
+                  ) : (
+                    <>
+                      Subscribe
+                      <svg
+                        className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                      </svg>
+                    </>
+                  )}
                 </button>
               </form>
+            )}
+
+            {state === "error" && (
+              <p className="mt-4 text-sm text-red-300">{errorMsg}</p>
             )}
 
             <p className="mt-8 text-[10px] font-medium uppercase tracking-[0.24em] text-white/40">
