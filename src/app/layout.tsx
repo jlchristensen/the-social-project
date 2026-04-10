@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     siteName: "The Social Project",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "The Social Project — Igniting Human Connection",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: "The Social Project — Igniting Human Connection",
     description:
       "A community dedicated to igniting human connection and inspiring authenticity.",
-    images: ["/images/og-image.jpg"],
+    images: ["/images/og-image.png"],
   },
 };
 
