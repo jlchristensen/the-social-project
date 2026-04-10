@@ -22,7 +22,7 @@ export default function HeroSection() {
 
       {/* ───── Top meta line ───── */}
       <div className="pointer-events-none absolute inset-x-0 top-28 z-10 mx-auto hidden max-w-7xl items-center justify-between px-10 text-[10px] font-medium uppercase tracking-[0.3em] text-white/55 md:flex">
-        <span>The Social Project — Est. 2024</span>
+        <span>The Social Project — Est. 2026</span>
         <span className="flex items-center gap-3">
           <span className="inline-block h-1 w-1 rounded-full bg-brand-200 breathe" />
           Building a movement
