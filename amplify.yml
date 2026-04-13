@@ -8,6 +8,8 @@ frontend:
       commands:
         - env | grep -e KIT_API_KEY >> .env.production
         - env | grep -e KIT_FORM_ID >> .env.production
+        - env | grep -e NEXT_PUBLIC_SUPABASE_URL >> .env.production
+        - env | grep -e NEXT_PUBLIC_SUPABASE_ANON_KEY >> .env.production
         - npm run build
   artifacts:
     baseDirectory: .next

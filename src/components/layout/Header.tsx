@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
   { href: "/blog", label: "Blog" },
@@ -12,8 +15,11 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -21,6 +27,31 @@ export default function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <header
@@ -52,21 +83,50 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/community"
-            className="group ml-3 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-brand-700 transition-all duration-300 hover:bg-brand-50 hover:shadow-[0_10px_30px_-12px_rgba(0,32,15,0.5)]"
-          >
-            Join us
-            <svg
-              className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
-            </svg>
-          </Link>
+
+          {!loading && (
+            <>
+              {user ? (
+                <div className="ml-3 flex items-center gap-2">
+                  <Link
+                    href="/profile"
+                    className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.12em] text-white transition-all duration-300 hover:bg-white/20"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-300 text-[10px] font-bold text-brand-900">
+                      {(user.email?.[0] ?? "?").toUpperCase()}
+                    </span>
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="rounded-full px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.12em] text-white/50 transition-colors duration-300 hover:text-white"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="group ml-3 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-brand-700 transition-all duration-300 hover:bg-brand-50 hover:shadow-[0_10px_30px_-12px_rgba(0,32,15,0.5)]"
+                >
+                  Sign in
+                  <svg
+                    className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 12h14m-6-6 6 6-6 6"
+                    />
+                  </svg>
+                </Link>
+              )}
+            </>
+          )}
         </nav>
 
         {/* Mobile menu button */}
@@ -101,13 +161,39 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/community"
-              onClick={() => setMobileOpen(false)}
-              className="mt-3 rounded-full bg-white px-5 py-3 text-center text-sm font-semibold text-brand-700"
-            >
-              Join the Community
-            </Link>
+
+            {!loading && (
+              <>
+                {user ? (
+                  <>
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className="rounded-xl px-3 py-3 text-base font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-white"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMobileOpen(false);
+                        handleSignOut();
+                      }}
+                      className="mt-3 rounded-full border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    onClick={() => setMobileOpen(false)}
+                    className="mt-3 rounded-full bg-white px-5 py-3 text-center text-sm font-semibold text-brand-700"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </>
+            )}
           </div>
         </nav>
       )}
