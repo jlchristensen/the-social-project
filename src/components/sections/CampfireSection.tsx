@@ -3,7 +3,16 @@ import Reveal from "@/components/ui/Reveal";
 
 export default function CampfireSection() {
   return (
-    <section className="relative overflow-hidden bg-brand-50 pt-12 pb-16 md:pt-16 md:pb-20">
+    <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-20">
+      {/* Warm “fireside” wash: cool mint eases into parchment so this block feels cozier than the rest of the page */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-50 via-[#f3ebe3] to-[#e9dfd4]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_95%_55%_at_50%_100%,rgba(232,184,106,0.16),transparent_62%)]"
+      />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-900">

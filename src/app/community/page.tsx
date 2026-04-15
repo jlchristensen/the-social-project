@@ -21,7 +21,7 @@ function DarkPanel({
 }) {
   return (
     <section
-      className={`relative overflow-hidden rounded-[28px] bg-[radial-gradient(800px_400px_at_50%_-10%,rgba(232,184,106,0.12),transparent_70%),linear-gradient(180deg,#00200f_0%,#00180a_100%)] px-6 py-12 text-brand-50 shadow-[0_40px_80px_-40px_rgba(0,32,15,0.5),0_0_0_1px_rgba(0,32,15,0.08)] md:px-16 md:py-16 ${className}`}
+      className={`relative overflow-hidden rounded-[28px] bg-[radial-gradient(800px_420px_at_50%_-8%,rgba(232,184,106,0.2),transparent_68%),radial-gradient(900px_500px_at_50%_108%,rgba(120,72,24,0.12),transparent_55%),linear-gradient(180deg,#151a12_0%,#0c0f0b_48%,#070907_100%)] px-6 py-12 text-brand-50 shadow-[0_40px_80px_-40px_rgba(24,18,10,0.55),0_0_0_1px_rgba(232,184,106,0.06)] md:px-16 md:py-16 ${className}`}
     >
       <Embers />
       <div className="relative z-[1]">{children}</div>
