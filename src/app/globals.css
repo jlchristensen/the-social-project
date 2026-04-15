@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f1f17;
+  --background: #06160d;
+  --foreground: #eef6f1;
 }
 
 @theme inline {
@@ -34,7 +34,10 @@ html {
 }
 
 body {
-  background: linear-gradient(180deg, #eef6f1 0%, #f4f9f6 40%, #f8faf8 100%);
+  background:
+    radial-gradient(70% 40% at 50% 0%, rgba(232, 184, 106, 0.06), transparent 60%),
+    linear-gradient(180deg, #08180e 0%, #06160d 30%, #04130a 100%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-feature-settings: "kern", "liga", "calt";
   -webkit-font-smoothing: antialiased;
@@ -43,8 +46,8 @@ body {
 }
 
 ::selection {
-  background: var(--color-brand-600);
-  color: #eef6f1;
+  background: var(--color-ember);
+  color: var(--color-brand-900);
 }
 
 /* ────────────────────────────────────────────────────────────

@@ -38,16 +38,16 @@ export default async function CampfireSection() {
   });
 
   return (
-    <section className="bg-brand-50 px-6 pt-12 pb-20 md:pt-16 md:pb-28">
+    <section className="px-6 pt-12 pb-20 md:pt-16 md:pb-28">
       <div className="mx-auto max-w-7xl">
         <Reveal>
-          <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-900">
+          <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-50">
             Sit down at the{" "}
-            <span className="font-display font-normal italic normal-case text-brand-600">
+            <span className="font-display font-normal italic normal-case text-brand-200">
               campfire.
             </span>
           </h2>
-          <p className="mt-8 max-w-xl text-base leading-relaxed text-brand-900/65 md:text-lg">
+          <p className="mt-8 max-w-xl text-base leading-relaxed text-brand-50/70 md:text-lg">
             One question. Every day. Answer honestly, then see what others
             have to share.
           </p>

@@ -58,12 +58,15 @@ export default function ProfileForm({
     setTimeout(() => setSaved(false), 3000);
   }
 
+  const inputClasses =
+    "w-full rounded-xl border border-brand-50/15 bg-white/[0.04] px-4 py-3 text-brand-50 placeholder:text-brand-50/40 focus:border-ember focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-ember/25 transition-all";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label
           htmlFor="display-name"
-          className="block text-sm font-medium text-brand-700 mb-1.5"
+          className="block text-sm font-medium text-brand-100 mb-1.5"
         >
           Display name
         </label>
@@ -74,14 +77,14 @@ export default function ProfileForm({
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="How should we call you?"
           maxLength={50}
-          className="w-full rounded-xl border border-brand-200 bg-white px-4 py-3 text-brand-900 placeholder:text-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+          className={inputClasses}
         />
       </div>
 
       <div>
         <label
           htmlFor="bio"
-          className="block text-sm font-medium text-brand-700 mb-1.5"
+          className="block text-sm font-medium text-brand-100 mb-1.5"
         >
           Bio
         </label>
@@ -92,21 +95,21 @@ export default function ProfileForm({
           placeholder="Tell the community a bit about yourself..."
           rows={4}
           maxLength={300}
-          className="w-full resize-none rounded-xl border border-brand-200 bg-white px-4 py-3 text-brand-900 placeholder:text-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+          className={`${inputClasses} resize-none`}
         />
-        <p className="mt-1 text-right text-xs text-brand-300">
+        <p className="mt-1 text-right text-xs text-brand-50/40">
           {bio.length}/300
         </p>
       </div>
 
       {error && (
-        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-xl bg-red-500/10 border border-red-400/30 px-4 py-3 text-sm text-red-300">
           {error}
         </div>
       )}
 
       {saved && (
-        <div className="rounded-xl bg-brand-50 border border-brand-200 px-4 py-3 text-sm text-brand-700">
+        <div className="rounded-xl bg-brand-700/30 border border-brand-200/30 px-4 py-3 text-sm text-brand-100">
           Profile saved successfully!
         </div>
       )}
@@ -114,7 +117,7 @@ export default function ProfileForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-xl bg-brand-600 px-4 py-3.5 text-sm font-semibold text-white transition-all hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full rounded-xl bg-ember px-4 py-3.5 text-sm font-semibold text-brand-900 transition-all hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(245,210,139,0.4)] focus:outline-none focus:ring-2 focus:ring-ember/40 focus:ring-offset-2 focus:ring-offset-[#06160d] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
       >
         {loading ? "Saving..." : "Save profile"}
       </button>

@@ -11,13 +11,14 @@ export default function HeroSection() {
           style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
         />
 
-        {/* Layered overlays for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-900/85 via-brand-700/65 to-brand-900/95" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,32,15,0.55)_100%)]" />
+        {/* Green-multiply wash — keeps the photo visible while tinting it
+            into the same evening-by-the-fire mood as the rest of the site. */}
+        <div className="absolute inset-0 mix-blend-multiply bg-[radial-gradient(ellipse_at_50%_35%,rgba(0,59,32,0.45)_0%,rgba(0,32,15,0.70)_60%,rgba(0,24,10,0.92)_100%)]" />
+        <div className="absolute inset-0 mix-blend-multiply bg-gradient-to-b from-[rgba(0,32,15,0.55)] via-[rgba(0,32,15,0.45)] to-[#06160d]" />
         <div className="grain" />
 
-        {/* Bottom blend so the hero melts into the next section */}
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#eef6f1]/30 to-[#eef6f1]" />
+        {/* Bottom blend so the hero melts into the dark forest below */}
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#06160d]/40 to-[#06160d]" />
       </div>
 
       {/* ───── Top meta line ───── */}

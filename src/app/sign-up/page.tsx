@@ -46,14 +46,17 @@ export default function SignUpPage() {
     router.refresh();
   }
 
+  const inputClasses =
+    "w-full rounded-xl border border-brand-50/15 bg-white/[0.04] px-4 py-3 text-brand-50 placeholder:text-brand-50/40 focus:border-ember focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-ember/25 transition-all";
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-24">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <h1 className="font-display text-4xl text-brand-900 mb-3">
+          <h1 className="font-display text-4xl text-brand-50 mb-3">
             Join the community
           </h1>
-          <p className="text-brand-700/60 text-lg">
+          <p className="text-brand-50/60 text-lg">
             Create your account and start connecting.
           </p>
         </div>
@@ -62,7 +65,7 @@ export default function SignUpPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-brand-700 mb-1.5"
+              className="block text-sm font-medium text-brand-100 mb-1.5"
             >
               Email
             </label>
@@ -74,14 +77,14 @@ export default function SignUpPage() {
               required
               autoComplete="email"
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-brand-200 bg-white px-4 py-3 text-brand-900 placeholder:text-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+              className={inputClasses}
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-brand-700 mb-1.5"
+              className="block text-sm font-medium text-brand-100 mb-1.5"
             >
               Password
             </label>
@@ -93,14 +96,14 @@ export default function SignUpPage() {
               required
               autoComplete="new-password"
               placeholder="At least 6 characters"
-              className="w-full rounded-xl border border-brand-200 bg-white px-4 py-3 text-brand-900 placeholder:text-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+              className={inputClasses}
             />
           </div>
 
           <div>
             <label
               htmlFor="confirm-password"
-              className="block text-sm font-medium text-brand-700 mb-1.5"
+              className="block text-sm font-medium text-brand-100 mb-1.5"
             >
               Confirm password
             </label>
@@ -112,12 +115,12 @@ export default function SignUpPage() {
               required
               autoComplete="new-password"
               placeholder="Type your password again"
-              className="w-full rounded-xl border border-brand-200 bg-white px-4 py-3 text-brand-900 placeholder:text-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+              className={inputClasses}
             />
           </div>
 
           {error && (
-            <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            <div className="rounded-xl bg-red-500/10 border border-red-400/30 px-4 py-3 text-sm text-red-300">
               {error}
             </div>
           )}
@@ -125,17 +128,17 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-brand-600 px-4 py-3.5 text-sm font-semibold text-white transition-all hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full rounded-xl bg-ember px-4 py-3.5 text-sm font-semibold text-brand-900 transition-all hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(245,210,139,0.4)] focus:outline-none focus:ring-2 focus:ring-ember/40 focus:ring-offset-2 focus:ring-offset-[#06160d] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
             {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-brand-700/50">
+        <p className="mt-8 text-center text-sm text-brand-50/55">
           Already have an account?{" "}
           <Link
             href="/sign-in"
-            className="font-medium text-brand-600 hover:text-brand-700 transition-colors"
+            className="font-medium text-brand-200 hover:text-ember transition-colors"
           >
             Sign in
           </Link>

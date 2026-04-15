@@ -25,11 +25,11 @@ export default function MerchPage() {
           </div>
 
           {/* Shipping note */}
-          <div className="mt-16 rounded-2xl bg-gradient-to-r from-brand-50 to-brand-100/50 p-8 text-center">
-            <p className="text-sm font-medium text-slate-900">
+          <div className="mt-16 rounded-2xl border border-brand-50/10 bg-white/[0.03] p-8 text-center">
+            <p className="text-sm font-medium text-brand-50">
               Free shipping on orders over $50
             </p>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-brand-50/55">
               All items ship within 3-5 business days. 100% satisfaction
               guaranteed.
             </p>

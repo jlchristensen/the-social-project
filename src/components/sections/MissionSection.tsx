@@ -33,13 +33,13 @@ const entries = [
 
 export default function MissionSection() {
   return (
-    <section className="relative overflow-hidden bg-brand-50 pt-16 pb-12 md:pt-20 md:pb-16">
+    <section className="relative overflow-hidden pt-16 pb-12 md:pt-20 md:pb-16">
       <div className="relative mx-auto max-w-7xl px-6 md:px-12">
         {/* headline */}
         <Reveal>
-          <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-900">
+          <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-50">
             A short list of things <br />
-            <span className="font-display font-normal italic normal-case text-brand-600">
+            <span className="font-display font-normal italic normal-case text-brand-200">
               we refuse to compromise on.
             </span>
           </h2>
@@ -51,18 +51,18 @@ export default function MissionSection() {
             <Reveal key={e.title} delay={i * 120}>
               <article className="grid grid-cols-12 items-start gap-6 md:gap-12">
                 <div className="col-span-12 md:col-span-5">
-                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-brand-600">
+                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-brand-200">
                     {e.classification}
                   </p>
-                  <h3 className="mt-4 text-3xl font-bold tracking-tight text-brand-900 md:text-4xl">
+                  <h3 className="mt-4 text-3xl font-bold tracking-tight text-brand-50 md:text-4xl">
                     {e.title}
                   </h3>
-                  <p className="mt-2 font-display text-xl italic text-brand-600 md:text-2xl">
+                  <p className="mt-2 font-display text-xl italic text-brand-200 md:text-2xl">
                     {e.sub}
                   </p>
                 </div>
                 <div className="col-span-12 md:col-span-7">
-                  <p className="text-base leading-[1.8] text-brand-900/75 md:text-lg">
+                  <p className="text-base leading-[1.8] text-brand-50/75 md:text-lg">
                     {e.body}
                   </p>
                 </div>
