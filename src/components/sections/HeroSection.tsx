@@ -65,7 +65,7 @@ export default function HeroSection() {
               href="/community"
               className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-brand-700 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] transition-transform duration-300 hover:-translate-y-0.5"
             >
-              <span className="relative">Join the Community</span>
+              <span className="relative">Sit at the fire</span>
               <svg
                 className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
                 viewBox="0 0 24 24"
