@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Community — The Corkboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Fraunces:ital,wght@0,400;0,600;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&family=Familjen+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kraft:#F3EADA;
+    --kraft-2:#E8DCC3;
+    --ink:#1E1A14;
+    --ink-soft:#4A4238;
+    --tomato:#E24B2C;
+    --marigold:#F2B705;
+    --sticky-yellow:#FFF2A8;
+    --sticky-mint:#CDE8D5;
+    --sticky-blush:#F7D1CB;
+    --sticky-blue:#C9DDE8;
+    --tape:rgba(245, 232, 190, .75);
+    --hand:'Caveat', cursive;
+    --display:'Fraunces', serif;
+    --ui:'Familjen Grotesk', system-ui, sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1000px 600px at 10% 0%, rgba(242,183,5,.08), transparent 60%),
+      radial-gradient(900px 500px at 90% 20%, rgba(226,75,44,.06), transparent 60%),
+      var(--kraft);
+    color:var(--ink);
+    font-family:var(--ui);font-size:16px;line-height:1.6;
+    min-height:100vh;position:relative;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:1;pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.28  0 0 0 0 0.18  0 0 0 0.22 0'/></filter><rect width='100%25' height='100%25' filter='url(%23p)' opacity='0.9'/></svg>");
+    mix-blend-mode:multiply;opacity:.6;
+  }
+  main{position:relative;z-index:2}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+  @media(max-width:640px){.wrap{padding:0 20px}}
+
+  /* site header */
+  .siteheader{padding:22px 0;border-bottom:1px dashed rgba(30,26,20,.2);position:relative;z-index:3}
+  .siteheader .inner{display:flex;justify-content:space-between;align-items:center}
+  .brand{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em}
+  .brand span{color:var(--tomato);font-style:italic;font-weight:600}
+  .nav{display:flex;gap:24px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+  .nav a{color:inherit;text-decoration:none}
+  .nav a:hover{color:var(--tomato)}
+  .nav .active{color:var(--ink);position:relative}
+  .nav .active::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:3px;background:var(--marigold);transform:skewX(-8deg)}
+
+  .scene-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--tomato);
+    display:flex;align-items:center;gap:14px;margin:64px 0 22px;
+  }
+  .scene-label::before,.scene-label::after{content:"";flex:1;height:1px;background:rgba(226,75,44,.35)}
+
+  .scene{position:relative;padding:56px 50px 72px}
+  @media(max-width:640px){.scene{padding:30px 18px 50px}}
+
+  /* STAMP */
+  .stamp{
+    display:inline-block;padding:10px 16px;border:2px solid var(--tomato);color:var(--tomato);
+    font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    transform:rotate(-4deg);
+    background:rgba(255,255,255,.4);
+    box-shadow:inset 0 0 0 1px rgba(226,75,44,.3);
+    border-radius:4px;
+  }
+  .stamp.small{padding:4px 9px;font-size:10px;border-width:1.5px}
+  .stamp.marigold{border-color:var(--marigold);color:var(--marigold)}
+  .stamp::after{
+    /* faint ink blur */
+    content:"";position:absolute;
+  }
+
+  /* torn paper banner with pushpin */
+  .banner-wrap{position:relative;margin-top:30px}
+  .banner{
+    position:relative;
+    background:#FBF5E6;
+    padding:34px 44px 40px;
+    box-shadow:0 20px 40px -20px rgba(30,26,20,.3), inset 0 0 60px rgba(226,75,44,.03);
+    transform:rotate(-.6deg);
+    /* torn top/bottom edges via masks */
+    clip-path:polygon(
+      0 6%, 3% 2%, 7% 7%, 11% 1%, 16% 5%, 22% 2%, 28% 6%, 34% 2%, 40% 7%, 47% 3%, 54% 6%, 61% 1%, 67% 6%, 74% 2%, 80% 7%, 86% 3%, 92% 6%, 96% 2%, 100% 5%,
+      100% 94%, 96% 99%, 92% 93%, 86% 98%, 80% 94%, 74% 99%, 67% 93%, 61% 98%, 54% 94%, 47% 99%, 40% 94%, 34% 98%, 28% 94%, 22% 99%, 16% 95%, 11% 99%, 7% 94%, 3% 98%, 0 94%
+    );
+  }
+  .pushpin{
+    position:absolute;left:50%;top:-14px;transform:translateX(-50%);z-index:3;
+    width:36px;height:36px;filter:drop-shadow(2px 4px 4px rgba(0,0,0,.25));
+  }
+  .banner .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--tomato);margin-bottom:12px}
+  .banner h1{
+    font-family:var(--display);font-weight:400;font-size:56px;line-height:1.05;letter-spacing:-.02em;
+    margin:0;max-width:22ch;
+  }
+  .banner h1 em{font-style:italic;color:var(--tomato);font-weight:600}
+  .banner .handnote{font-family:var(--hand);font-size:26px;color:var(--ink-soft);margin-top:22px;display:block}
+  @media(max-width:720px){.banner h1{font-size:36px}.banner{padding:28px 22px 34px}}
+
+  /* header row */
+  .header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+  .date-stamp{position:relative;font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);
+    padding:10px 14px;border:1.5px dashed var(--ink);transform:rotate(-2deg);background:rgba(255,255,255,.3)}
+  .date-stamp b{display:block;font-family:var(--display);font-size:22px;letter-spacing:-.01em;text-transform:none;font-weight:700}
+  .tally{font-family:var(--hand);font-size:28px;color:var(--tomato);transform:rotate(2deg)}
+  .tally b{color:var(--ink)}
+
+  /* locked polaroid row */
+  .polaroid-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:46px;align-items:start}
+  @media(max-width:780px){.polaroid-row{grid-template-columns:1fr}}
+  .polaroid{
+    background:#fff;padding:16px 16px 54px;
+    box-shadow:0 10px 22px -10px rgba(30,26,20,.35);
+    position:relative;
+  }
+  .polaroid.locked{filter:blur(3px) grayscale(.3);opacity:.55}
+  .polaroid .img{aspect-ratio:4/3;background:linear-gradient(135deg,#D6C8AD,#B9A888);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-family:var(--hand);font-size:22px;padding:18px;text-align:center}
+  .polaroid .cap{font-family:var(--hand);font-size:22px;color:var(--ink);margin-top:10px;text-align:center}
+  .polaroid:nth-child(1){transform:rotate(-3deg)}
+  .polaroid:nth-child(2){transform:rotate(1.5deg);margin-top:14px}
+  .polaroid:nth-child(3){transform:rotate(-1deg)}
+  .hand-arrow{font-family:var(--hand);font-size:26px;color:var(--tomato);text-align:center;margin-top:18px;transform:rotate(-1deg)}
+
+  .cta-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:30px}
+  .btn{
+    font-family:var(--ui);font-weight:600;font-size:14px;letter-spacing:.01em;
+    padding:14px 22px;border:2px solid var(--ink);cursor:pointer;
+    text-decoration:none;display:inline-block;color:var(--ink);background:var(--marigold);
+    box-shadow:4px 4px 0 var(--ink);
+    transition:transform .15s ease, box-shadow .15s ease;
+    border-radius:6px;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn.tomato{background:var(--tomato);color:#fff}
+  .btn.ghost{background:transparent}
+
+  /* SCENE 2 — notebook paper compose */
+  .notebook{
+    position:relative;background:#FBF9EE;
+    padding:50px 44px 34px;
+    background-image:repeating-linear-gradient(to bottom, transparent 0 33px, rgba(30,26,20,.08) 33px 34px);
+    border:1px solid rgba(30,26,20,.15);
+    box-shadow:0 30px 50px -30px rgba(30,26,20,.3);
+    max-width:780px;margin:0 auto;
+  }
+  .notebook::before{content:"";position:absolute;left:60px;top:0;bottom:0;width:1.5px;background:rgba(226,75,44,.35)}
+  .washi{
+    position:absolute;top:-14px;left:40%;width:180px;height:34px;
+    background:repeating-linear-gradient(-45deg, var(--marigold) 0 8px, #FBD95A 8px 16px);
+    transform:rotate(-3deg);
+    opacity:.85;box-shadow:0 3px 6px rgba(0,0,0,.1);
+  }
+  .washi.b{left:auto;right:30px;top:auto;bottom:-12px;width:140px;background:repeating-linear-gradient(-45deg, var(--sticky-mint) 0 8px, #A7D4B5 8px 16px);transform:rotate(3deg)}
+  .notebook label{font-family:var(--mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--tomato);margin-left:30px;display:block}
+  .notebook textarea{
+    width:100%;min-height:200px;background:transparent;border:none;outline:none;resize:vertical;
+    font-family:var(--hand);font-size:28px;line-height:34px;color:var(--ink);padding-left:30px;
+  }
+  .notebook textarea::placeholder{color:rgba(30,26,20,.35);font-style:italic}
+  .note-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding-left:30px}
+  .anon{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer}
+  .anon input{accent-color:var(--tomato);width:16px;height:16px}
+  .count{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+
+  .stamp-btn{
+    font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.3em;text-transform:uppercase;
+    border:2.5px solid var(--tomato);color:var(--tomato);background:rgba(255,255,255,.6);
+    padding:12px 20px;cursor:pointer;transform:rotate(-2deg);
+    box-shadow:inset 0 0 0 1px rgba(226,75,44,.3);border-radius:4px;
+    transition:transform .15s ease, background .2s ease;
+  }
+  .stamp-btn:hover{background:var(--tomato);color:#fff;transform:rotate(-2deg) scale(1.04)}
+
+  /* SCENE 3 — the wall */
+  .wall-head{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:30px}
+  .wall-head h2{font-family:var(--display);font-weight:700;font-size:36px;margin:0;letter-spacing:-.01em}
+  .wall-head h2 em{color:var(--tomato);font-style:italic}
+  .welcome-note{
+    background:var(--sticky-yellow);padding:14px 18px;font-family:var(--hand);font-size:22px;color:var(--ink);
+    transform:rotate(-2deg);box-shadow:3px 4px 10px rgba(0,0,0,.12);position:relative;max-width:440px;
+  }
+  .welcome-note::before{
+    content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    width:70px;height:22px;background:var(--tape);box-shadow:0 2px 4px rgba(0,0,0,.1);
+  }
+
+  .wall{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 24px;margin-top:30px}
+  @media(max-width:1000px){.wall{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.wall{grid-template-columns:1fr;gap:22px}}
+
+  .note{
+    position:relative;padding:22px 22px 20px;
+    box-shadow:6px 8px 18px -8px rgba(30,26,20,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+    font-size:16px;line-height:1.5;color:var(--ink);
+  }
+  .note:hover{transform:rotate(0deg) translateY(-4px)!important;box-shadow:8px 14px 26px -8px rgba(30,26,20,.4);z-index:5}
+  .note .who{font-family:var(--hand);font-size:22px;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .note .who .name{font-weight:600}
+  .note .stamp-time{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--ink-soft);border:1px solid var(--ink-soft);padding:3px 6px;transform:rotate(2deg);border-radius:2px;text-transform:uppercase}
+  .note p{margin:6px 0 14px;font-family:var(--display);font-size:17px;line-height:1.5;color:var(--ink)}
+  .note .row{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .note .row button{background:none;border:none;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:0}
+  .note .row button:hover{color:var(--tomato)}
+  .note .heart{width:14px;height:14px}
+
+  /* variant styles */
+  .sticky-y{background:var(--sticky-yellow);transform:rotate(-2.2deg)}
+  .sticky-m{background:var(--sticky-mint);transform:rotate(1.4deg)}
+  .sticky-b{background:var(--sticky-blush);transform:rotate(-1deg)}
+  .sticky-blue{background:var(--sticky-blue);transform:rotate(2deg)}
+  .index-card{background:#fff;border:1px solid rgba(30,26,20,.15);transform:rotate(-.8deg)}
+  .index-card::before{content:"";position:absolute;left:16px;right:16px;top:38px;height:1px;background:rgba(226,75,44,.35)}
+  .notebook-rip{
+    background:#FBF9EE;
+    background-image:repeating-linear-gradient(to bottom, transparent 0 26px, rgba(30,26,20,.07) 26px 27px);
+    transform:rotate(1.8deg);
+    clip-path:polygon(0 0, 100% 0, 100% 96%, 94% 99%, 88% 95%, 82% 99%, 74% 96%, 66% 99%, 58% 95%, 50% 99%, 42% 96%, 34% 99%, 26% 95%, 18% 99%, 10% 96%, 0 99%);
+  }
+  .polaroid-note{background:#fff;padding:16px 16px 40px;transform:rotate(-2deg)}
+  .polaroid-note .pull{
+    aspect-ratio:4/3;background:linear-gradient(135deg,#2B241B,#3D3323);color:#F5E7C8;
+    display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;
+    font-family:var(--display);font-style:italic;font-size:20px;line-height:1.3;
+  }
+  .polaroid-note .cap{font-family:var(--hand);font-size:20px;color:var(--ink-soft);text-align:center;margin-top:10px}
+
+  /* tape/pin decorations */
+  .tape-top{position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-4deg);width:90px;height:22px;background:var(--tape);box-shadow:0 2px 4px rgba(0,0,0,.1)}
+  .tape-tr{position:absolute;top:-8px;right:-12px;transform:rotate(34deg);width:74px;height:20px;background:var(--tape);box-shadow:0 2px 4px rgba(0,0,0,.1)}
+  .pin{position:absolute;top:-6px;left:20px;width:22px;height:22px;filter:drop-shadow(1px 2px 3px rgba(0,0,0,.3))}
+  .paperclip{position:absolute;top:-10px;right:16px;width:26px;height:44px;filter:drop-shadow(1px 2px 3px rgba(0,0,0,.25))}
+
+  /* tucked replies */
+  .tucked{margin-top:16px;padding-top:14px;border-top:1.5px dashed rgba(30,26,20,.25);display:flex;flex-direction:column;gap:10px}
+  .tucked .reply{background:#fff;padding:10px 14px;font-family:var(--hand);font-size:18px;color:var(--ink);transform:rotate(-.6deg);box-shadow:2px 3px 6px rgba(0,0,0,.1)}
+  .tucked .reply:nth-child(2){transform:rotate(.8deg);background:var(--sticky-blush)}
+  .tucked .reply b{font-family:var(--ui);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tomato);display:block;margin-bottom:3px}
+
+  footer.foot{padding:70px 0 80px;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);opacity:.7}
+
+  /* entrance animation */
+  .fade{opacity:0;transform:translateY(14px);animation:f 1s cubic-bezier(.2,.6,.2,1) forwards}
+  .fade.d1{animation-delay:.1s}.fade.d2{animation-delay:.25s}.fade.d3{animation-delay:.4s}
+  .wall .note{opacity:0;animation:drop .8s cubic-bezier(.2,.8,.2,1) forwards}
+  .wall .note:nth-child(1){animation-delay:.05s}
+  .wall .note:nth-child(2){animation-delay:.12s}
+  .wall .note:nth-child(3){animation-delay:.2s}
+  .wall .note:nth-child(4){animation-delay:.28s}
+  .wall .note:nth-child(5){animation-delay:.36s}
+  .wall .note:nth-child(6){animation-delay:.44s}
+  .wall .note:nth-child(7){animation-delay:.52s}
+  .wall .note:nth-child(8){animation-delay:.6s}
+  @keyframes f{to{opacity:1;transform:none}}
+  @keyframes drop{from{opacity:0;transform:translateY(-30px) rotate(0)}to{opacity:1}}
+
+  @media(max-width:640px){
+    .sticky-y,.sticky-m,.sticky-b,.sticky-blue,.index-card,.notebook-rip,.polaroid-note{transform:rotate(0)!important}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="pushpin" viewBox="0 0 36 36">
+      <circle cx="18" cy="14" r="10" fill="#E24B2C"/>
+      <circle cx="14" cy="11" r="3.5" fill="#FF9982"/>
+      <path d="M17 22 L18 34 L19 22 Z" fill="#5A4A3A"/>
+    </symbol>
+    <symbol id="pushpin-sm" viewBox="0 0 22 22">
+      <circle cx="11" cy="9" r="6" fill="#E24B2C"/>
+      <circle cx="9" cy="7" r="2" fill="#FFB19D"/>
+      <path d="M10 14 L11 21 L12 14 Z" fill="#5A4A3A"/>
+    </symbol>
+    <symbol id="paperclip" viewBox="0 0 26 44">
+      <path d="M8 4 a5 5 0 0 1 10 0 v30 a4 4 0 0 1 -8 0 v-24 a3 3 0 0 1 6 0 v20" fill="none" stroke="#8a8374" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="heart-stamp" viewBox="0 0 24 22">
+      <path d="M12 20 C4 14 1 10 1 6 A5 5 0 0 1 12 4 A5 5 0 0 1 23 6 C23 10 20 14 12 20 Z" fill="none" stroke="#E24B2C" stroke-width="1.8"/>
+    </symbol>
+    <symbol id="heart-filled" viewBox="0 0 24 22">
+      <path d="M12 20 C4 14 1 10 1 6 A5 5 0 0 1 12 4 A5 5 0 0 1 23 6 C23 10 20 14 12 20 Z" fill="#E24B2C"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="siteheader">
+  <div class="wrap inner">
+    <div class="brand">the social <span>project</span></div>
+    <nav class="nav">
+      <a href="#">Manifesto</a><a href="#">Resources</a><a class="active" href="#">Community</a><a href="#">Sign in</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- SCENE 1 -->
+  <div class="scene-label">Scene 01 — Walking up to the board</div>
+  <section class="scene fade d1">
+    <div class="header-row">
+      <div class="date-stamp">Tuesday<br/><b>April 14, 2026</b><br/>No. 047</div>
+      <span class="stamp">342 notes pinned today</span>
+    </div>
+
+    <div class="banner-wrap">
+      <svg class="pushpin"><use href="#pushpin"/></svg>
+      <div class="banner">
+        <div class="eyebrow">Today's Question &nbsp;·&nbsp; Pinned 7:00 am</div>
+        <h1>What's one small way you <em>showed up</em> for someone this week — the kind of thing that won't make it to social media?</h1>
+        <span class="handnote">answer yours first, then you can see the whole wall →</span>
+      </div>
+    </div>
+
+    <div class="polaroid-row" aria-hidden="true">
+      <div class="polaroid locked">
+        <div class="img">Baked too many scones on purpose…</div>
+        <div class="cap">— Margaux, Brooklyn</div>
+      </div>
+      <div class="polaroid locked">
+        <div class="img">Forty minutes on the porch, no words</div>
+        <div class="cap">— Anonymous, Austin</div>
+      </div>
+      <div class="polaroid locked">
+        <div class="img">Cash in a card. No name. No note.</div>
+        <div class="cap">— Rafa, Oakland</div>
+      </div>
+    </div>
+    <div class="hand-arrow">↓ sign in to unlock the wall ↓</div>
+
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn tomato" href="#">Sign in to pin a note</a>
+      <a class="btn ghost" href="#">Make an account</a>
+    </div>
+  </section>
+
+  <!-- SCENE 2 -->
+  <div class="scene-label">Scene 02 — Writing your note</div>
+  <section class="scene fade d2">
+    <div class="notebook">
+      <div class="washi"></div>
+      <div class="washi b"></div>
+      <label>Your note</label>
+      <textarea placeholder="Write anything. small is good. messy is good.">Tuesday morning the old man two doors down was struggling with his bin. I didn't ask — I just did it on my way past and kept walking so it wouldn't be a thing.</textarea>
+      <div class="note-foot">
+        <label class="anon"><input type="checkbox" checked/> Sign "friend in apt 3B"</label>
+        <div class="count"><b style="color:var(--tomato)">216</b> / 800 chars</div>
+        <button class="stamp-btn">📌 &nbsp;PIN IT</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 -->
+  <div class="scene-label">Scene 03 — The wall</div>
+  <section class="scene fade d3">
+    <div class="wall-head">
+      <h2>the <em>wall</em> today</h2>
+      <div class="welcome-note">you pinned yours. here's everyone else.</div>
+    </div>
+
+    <div class="wall">
+
+      <article class="note sticky-y">
+        <svg class="pin"><use href="#pushpin-sm"/></svg>
+        <div class="who"><span class="name">Margaux</span><span class="stamp-time">Brooklyn · 7:42a</span></div>
+        <p>Upstairs neighbor crying through the wall three nights running. Baked too many scones on purpose and left four on her mat. Post-it said "made extra — no need to reply." She slid a thank-you under my door the next morning. We still haven't spoken. I think that's the whole point.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-filled"/></svg> 47</button>
+          <button>+ add a note · 6</button>
+        </div>
+        <div class="tucked">
+          <div class="reply"><b>— June, Seattle</b>This is the best kind — one that doesn't demand anything back.</div>
+          <div class="reply"><b>— Anonymous</b>Crying through walls is its own language. You answered it.</div>
+        </div>
+      </article>
+
+      <article class="note index-card">
+        <svg class="paperclip"><use href="#paperclip"/></svg>
+        <div class="who"><span class="name">Anonymous</span><span class="stamp-time">Austin · 8:03a</span></div>
+        <p>Sat on the porch with my dad for forty minutes without talking about anything. He needed that more than advice.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-stamp"/></svg> 58</button>
+          <button>+ note · 4</button>
+        </div>
+      </article>
+
+      <article class="note polaroid-note">
+        <div class="tape-top"></div>
+        <div class="pull">"I stopped pretending to be busy when my roommate came home."</div>
+        <div class="cap">— Priya, Toronto · 9:01a</div>
+        <div class="row" style="justify-content:center;margin-top:10px">
+          <button><svg class="heart"><use href="#heart-filled"/></svg> 71</button>
+          <button>+ note · 9</button>
+        </div>
+      </article>
+
+      <article class="note sticky-m">
+        <svg class="pin"><use href="#pushpin-sm"/></svg>
+        <div class="who"><span class="name">Rafa</span><span class="stamp-time">Oakland · 8:12a</span></div>
+        <p>Left cash folded in a card on the café counter for my barista — her kid's been sick. No name. No note. First time I've done something like that in 38 years, and it rattled me more than I thought it would.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-stamp"/></svg> 32</button>
+          <button>+ note · 3</button>
+        </div>
+      </article>
+
+      <article class="note notebook-rip">
+        <svg class="paperclip"><use href="#paperclip"/></svg>
+        <div class="who"><span class="name">Eitan</span><span class="stamp-time">Chicago · 8:19a</span></div>
+        <p>Called my sister instead of texting. She picked up on the third ring sounding surprised. Eleven minutes about nothing. I could hear her making soup in the background. That's the whole entry.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-filled"/></svg> 41</button>
+          <button>+ note · 2</button>
+        </div>
+      </article>
+
+      <article class="note sticky-b">
+        <svg class="pin"><use href="#pushpin-sm"/></svg>
+        <div class="who"><span class="name">friend at the bus stop</span><span class="stamp-time">Glasgow · 8:33a</span></div>
+        <p>A woman beside me was trying not to cry. I didn't speak — I just stood a little closer than British politeness usually allows, and let her on the bus first. She nodded. That was the whole conversation.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-stamp"/></svg> 29</button>
+          <button>+ note · 1</button>
+        </div>
+      </article>
+
+      <article class="note sticky-blue">
+        <svg class="pin"><use href="#pushpin-sm"/></svg>
+        <div class="who"><span class="name">Tomás</span><span class="stamp-time">Lisbon · 9:17a</span></div>
+        <p>Left a note in my partner's coat pocket she won't find until Friday. Just: <em>"I see how hard you're working."</em> We've been brittle for a month. Small repair. Starts somewhere.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-stamp"/></svg> 39</button>
+          <button>+ note · 1</button>
+        </div>
+      </article>
+
+      <article class="note index-card">
+        <div class="tape-tr"></div>
+        <div class="who"><span class="name">friend in apt 3B</span><span class="stamp-time">your note · just now</span></div>
+        <p>Tuesday morning the old man two doors down was struggling with his bin. I didn't ask — I just did it on my way past and kept walking so it wouldn't be a thing.</p>
+        <div class="row">
+          <button><svg class="heart"><use href="#heart-stamp"/></svg> 2</button>
+          <button>+ note · 0</button>
+          <span class="stamp small marigold" style="margin-left:auto">YOURS</span>
+        </div>
+      </article>
+
+    </div>
+
+    <p style="text-align:center;font-family:var(--hand);font-size:24px;color:var(--ink-soft);margin-top:40px">new question goes up at 7am sharp. see you tomorrow.</p>
+  </section>
+
+  <footer class="foot">The Social Project · pinned daily · est. 2026</footer>
+</main>
+</body>
+</html>
