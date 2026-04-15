@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,9 +33,6 @@ export default function SignUpPage() {
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
     });
 
     setLoading(false);
@@ -44,45 +42,8 @@ export default function SignUpPage() {
       return;
     }
 
-    setSuccess(true);
-  }
-
-  if (success) {
-    return (
-      <div className="flex min-h-screen items-center justify-center px-6 py-24">
-        <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-brand-100">
-            <svg
-              className="h-8 w-8 text-brand-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
-          <h1 className="font-display text-3xl text-brand-900 mb-3">
-            Check your email
-          </h1>
-          <p className="text-brand-700/70 text-lg leading-relaxed">
-            We sent a confirmation link to{" "}
-            <span className="font-medium text-brand-700">{email}</span>. Click
-            the link to activate your account.
-          </p>
-          <Link
-            href="/sign-in"
-            className="mt-8 inline-block text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
-          >
-            Back to sign in
-          </Link>
-        </div>
-      </div>
-    );
+    router.push("/profile");
+    router.refresh();
   }
 
   return (
