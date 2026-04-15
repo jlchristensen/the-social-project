@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -16,8 +16,15 @@ const navLinks = [
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Routes without a dark PageHeader behind the fixed header need the
+  // header to render in its solid dark state immediately, otherwise the
+  // white logo/nav disappears against the light page background.
+  const forceSolid = pathname === "/community";
+  const solid = scrolled || forceSolid;
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,7 +63,7 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 z-50 w-full transition-[background-color,backdrop-filter,border-color,padding,box-shadow] duration-700 ease-out ${
-        scrolled
+        solid
           ? "border-b border-white/10 bg-brand-900/85 py-3 shadow-[0_8px_30px_-15px_rgba(0,32,15,0.6)] backdrop-blur-xl"
           : "border-b border-transparent bg-transparent py-5"
       }`}
