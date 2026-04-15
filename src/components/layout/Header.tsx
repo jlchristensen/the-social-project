@@ -7,9 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
-  { href: "/blog", label: "Blog" },
   { href: "/community", label: "The Campfire" },
-  { href: "/merch", label: "Merch" },
+  { href: "/merch", label: "The Gift Shop" },
 ];
 
 export default function Header() {

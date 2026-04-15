@@ -3,7 +3,7 @@ import ProductCard from "@/components/merch/ProductCard";
 import PageHeader from "@/components/ui/PageHeader";
 
 export const metadata = {
-  title: "Merch — The Social Project",
+  title: "The Gift Shop — The Social Project",
   description:
     "Wear the mission. Conversation cards, apparel, and goods that spark real connection.",
 };
@@ -12,7 +12,7 @@ export default function MerchPage() {
   return (
     <>
       <PageHeader
-        title="Merch"
+        title="The Gift Shop"
         subtitle="Wear the mission. Every purchase supports the community and sparks conversations that matter."
       />
       <section className="py-16 md:py-20">

@@ -2,9 +2,8 @@ import Link from "next/link";
 
 const footerLinks = {
   Explore: [
-    { href: "/blog", label: "Blog" },
     { href: "/community", label: "The Campfire" },
-    { href: "/merch", label: "Merch" },
+    { href: "/merch", label: "The Gift Shop" },
   ],
   Company: [
     { href: "#", label: "Contact" },

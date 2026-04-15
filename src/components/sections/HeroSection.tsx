@@ -77,10 +77,10 @@ export default function HeroSection() {
               </svg>
             </Link>
             <Link
-              href="/blog"
+              href="/merch"
               className="inline-flex items-center gap-3 rounded-full border border-white/30 bg-white/[0.04] px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm transition-colors duration-300 hover:border-white hover:bg-white/10"
             >
-              Read the Blog
+              The Gift Shop
             </Link>
           </div>
         </Reveal>
