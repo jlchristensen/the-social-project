@@ -1,7 +1,7 @@
 import HeroSection from "@/components/sections/HeroSection";
 import StatsSection from "@/components/sections/StatsSection";
 import MissionSection from "@/components/sections/MissionSection";
-import FeaturedContent from "@/components/sections/FeaturedContent";
+import CampfireSection from "@/components/sections/CampfireSection";
 import CTASection from "@/components/sections/CTASection";
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
       <HeroSection />
       <StatsSection />
       <MissionSection />
-      <FeaturedContent />
+      <CampfireSection />
       <CTASection />
     </>
   );
