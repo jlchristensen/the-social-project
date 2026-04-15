@@ -3,12 +3,10 @@ import Link from "next/link";
 const footerLinks = {
   Explore: [
     { href: "/blog", label: "Blog" },
-    { href: "/community", label: "Community" },
-    { href: "/resources", label: "Resources" },
+    { href: "/community", label: "The Campfire" },
     { href: "/merch", label: "Merch" },
   ],
   Company: [
-    { href: "/about", label: "About" },
     { href: "#", label: "Contact" },
     { href: "#", label: "Privacy Policy" },
     { href: "#", label: "Terms" },
