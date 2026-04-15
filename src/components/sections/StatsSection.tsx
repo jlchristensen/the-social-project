@@ -9,7 +9,7 @@ const stats = [
 
 export default function StatsSection() {
   return (
-    <section className="relative overflow-hidden bg-brand-50 py-28 md:py-36">
+    <section className="relative overflow-hidden bg-brand-50 pt-28 pb-12 md:pt-36 md:pb-16">
       {/* Soft ambient wash */}
       <div
         aria-hidden

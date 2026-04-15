@@ -3,7 +3,7 @@ import Reveal from "@/components/ui/Reveal";
 
 export default function CampfireSection() {
   return (
-    <section className="relative overflow-hidden bg-brand-50 pt-12 pb-32 md:pt-16 md:pb-40">
+    <section className="relative overflow-hidden bg-brand-50 pt-12 pb-16 md:pt-16 md:pb-20">
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-900">

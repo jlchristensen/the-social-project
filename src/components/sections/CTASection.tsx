@@ -40,7 +40,7 @@ export default function CTASection() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-brand-50 py-24 md:py-32">
+    <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 to-[#e4efe8] py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="relative isolate overflow-hidden rounded-[2.5rem] px-8 py-20 text-center md:px-20 md:py-28">
           {/* Layered backgrounds */}
