@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dark Forest palette · whole-site preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600;700&family=Tan+Nimbus&display=swap" rel="stylesheet">
+<style>
+  /* ── Dark Forest palette ──
+     Replaces the cream/brand-50 body washes with the same deep
+     forest greens used by the Campfire scene. The whole site reads
+     as one continuous dark experience instead of cream → dark seams. */
+  :root{
+    /* the new "main greens" — same as the community-page scene */
+    --night:        #06160d;   /* base background */
+    --night-up:     #08180e;   /* slightly lifted */
+    --night-deep:   #04130a;   /* slightly deeper */
+    --panel:        #0a1f12;   /* card / panel surface */
+    --panel-soft:   #0d2618;   /* hover / slightly lifted panel */
+
+    /* keep the existing greens for accents (text, dots, etc) */
+    --brand-50:     #eef6f1;   /* cream — now used only as text on dark */
+    --brand-100:    #d0e8d9;
+    --brand-200:    #a1d1b3;
+    --brand-300:    #5fad80;
+    --brand-500:    #1a7a4a;
+    --brand-600:    #004d29;
+    --brand-700:    #003b20;
+    --brand-900:    #00200f;
+
+    --ember:        #E8B86A;
+    --ember-hot:    #F5D28B;
+
+    --serif: 'Instrument Serif', Georgia, serif;
+    --display: 'Tan Nimbus', 'Instrument Serif', serif;
+    --ui:    'Figtree', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:var(--ui);color:var(--brand-50);background:var(--night)}
+  body{
+    min-height:100vh;overflow-x:hidden;
+    background:
+      radial-gradient(70% 40% at 50% 0%, rgba(232,184,106,.06), transparent 60%),
+      linear-gradient(180deg, var(--night-up) 0%, var(--night) 30%, var(--night-deep) 100%);
+  }
+  a{color:inherit;text-decoration:none}
+
+  /* film grain */
+  .grain{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.16;mix-blend-mode:overlay;
+  }
+
+  /* embers */
+  .embers{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .embers i{position:absolute;bottom:-10px;width:3px;height:3px;background:var(--ember);border-radius:50%;
+    box-shadow:0 0 10px var(--ember-hot),0 0 18px var(--ember);opacity:.55;animation:rise linear infinite}
+  .embers i:nth-child(1){left:8%;animation-duration:14s}
+  .embers i:nth-child(2){left:24%;animation-duration:18s;animation-delay:-7s;width:2px;height:2px}
+  .embers i:nth-child(3){left:42%;animation-duration:16s;animation-delay:-11s}
+  .embers i:nth-child(4){left:62%;animation-duration:19s;animation-delay:-4s;width:2px;height:2px}
+  .embers i:nth-child(5){left:78%;animation-duration:15s;animation-delay:-9s}
+  .embers i:nth-child(6){left:90%;animation-duration:17s;animation-delay:-1s;width:2px;height:2px}
+  @keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.6}80%{opacity:.25}100%{transform:translateY(-110vh) translateX(20px);opacity:0}}
+
+  /* ── Header ── */
+  .siteheader{
+    position:sticky;top:0;z-index:50;
+    background:rgba(4,15,9,.78);backdrop-filter:blur(20px) saturate(140%);
+    border-bottom:1px solid rgba(232,184,106,.08);
+  }
+  .siteheader .row{
+    max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .pip{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.25);position:relative}
+  .brand .pip::before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--brand-200);opacity:.85}
+  .brand .pip::after{content:"";position:absolute;inset:10px;border-radius:50%;background:var(--brand-700)}
+  .brand span{font-family:var(--serif);font-size:18px;color:#fff;letter-spacing:-.005em}
+  .nav{display:flex;align-items:center;gap:6px}
+  .nav a{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);padding:8px 14px;border-radius:999px}
+  .nav a:hover{color:#fff}
+  .nav .signin{background:#fff;color:var(--brand-700);font-weight:600;padding:10px 18px;margin-left:8px}
+
+  /* ── Hero ── */
+  .hero{
+    position:relative;min-height:88vh;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;text-align:center;padding:120px 24px 100px;
+    background:
+      radial-gradient(60% 50% at 50% 35%, rgba(0,77,41,.35), transparent 70%),
+      radial-gradient(80% 60% at 50% 100%, rgba(0,32,15,.85), transparent 70%);
+  }
+  /* Hero photo — much more visible. Photo is the star, overlay is just
+     enough to keep text readable and to melt into the dark forest below. */
+  /* Hero photo — visible, but tinted with a deep forest-green wash so it
+     belongs to the same evening-by-the-fire mood as the rest of the site. */
+  .hero::before{
+    content:"";position:absolute;inset:0;background-image:url('/images/hero-bg.jpg');background-size:cover;background-position:center;
+    opacity:.9;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse at 50% 35%, rgba(0,59,32,.45) 0%, rgba(0,32,15,.70) 60%, rgba(0,24,10,.92) 100%),
+      linear-gradient(180deg, rgba(0,32,15,.55) 0%, rgba(0,32,15,.45) 35%, rgba(6,22,13,.78) 80%, rgba(6,22,13,1) 100%);
+    mix-blend-mode:multiply;
+  }
+  .hero .inner{position:relative;z-index:2;max-width:1100px}
+  .hero .topmeta{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:rgba(238,246,241,.55);
+    max-width:1100px;margin:0 auto 60px;padding:0 0;
+  }
+  .hero .topmeta .live{display:flex;align-items:center;gap:10px}
+  .hero .topmeta .dot{width:5px;height:5px;border-radius:50%;background:var(--brand-200);box-shadow:0 0 10px var(--brand-200)}
+  .hero h1{
+    font-size:clamp(2.6rem,8.4vw,7.5rem);font-weight:700;line-height:.92;letter-spacing:-.025em;color:#fff;
+  }
+  .hero h1 em{font-family:var(--display);font-style:italic;font-weight:400;color:var(--brand-200);letter-spacing:-.012em}
+  .hero p.lead{
+    margin:36px auto 0;max-width:560px;font-size:17px;line-height:1.55;color:rgba(255,255,255,.78);
+  }
+  .hero .ctas{margin-top:44px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 28px;border-radius:999px;
+    font-family:var(--ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    transition:transform .3s ease;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:#fff;color:var(--brand-700);box-shadow:0 24px 60px -20px rgba(0,0,0,.55)}
+  .btn.ghost{background:rgba(255,255,255,.04);color:#fff;border:1px solid rgba(255,255,255,.3)}
+  .btn.ember{background:var(--ember);color:var(--brand-900);box-shadow:0 0 40px rgba(245,210,139,.4)}
+
+  /* ── Stats ── */
+  .stats{
+    padding:120px 24px 80px;text-align:center;position:relative;
+    background:
+      radial-gradient(60% 40% at 50% 0%, rgba(95,173,128,.10), transparent 70%);
+  }
+  .stats .head{
+    display:inline-flex;align-items:center;gap:18px;
+    font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--brand-200);opacity:.85;
+  }
+  .stats .head .rule{display:inline-block;width:48px;height:1px;background:var(--brand-200);opacity:.4}
+  .stats .grid{
+    max-width:1200px;margin:80px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  }
+  @media(max-width:900px){.stats .grid{grid-template-columns:repeat(2,1fr);gap:48px 0}}
+  .stat{padding:0 24px;text-align:left;border-left:1px solid rgba(238,246,241,.10)}
+  .stat:first-child{border-left:none}
+  .stat .v{font-family:var(--display);font-size:clamp(3rem,5.4vw,4.4rem);line-height:1;color:var(--brand-200)}
+  .stat .l{margin-top:24px;font-size:14px;line-height:1.55;color:rgba(238,246,241,.7);max-width:15rem}
+
+  /* ── Mission ── */
+  .mission{
+    padding:80px 24px 120px;position:relative;
+  }
+  .mission .wrap{max-width:1200px;margin:0 auto}
+  .mission h2{
+    font-size:clamp(2.5rem,7vw,5.4rem);font-weight:700;line-height:.9;letter-spacing:-.02em;text-transform:uppercase;color:#fff;max-width:18ch;
+  }
+  .mission h2 em{font-family:var(--display);font-style:italic;font-weight:400;text-transform:none;color:var(--brand-200)}
+  .entries{margin-top:80px;display:flex;flex-direction:column;gap:80px}
+  .entry{display:grid;grid-template-columns:5fr 7fr;gap:48px;align-items:start}
+  @media(max-width:900px){.entry{grid-template-columns:1fr;gap:18px}}
+  .entry .cls{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--brand-200)}
+  .entry h3{margin-top:14px;font-size:32px;font-weight:700;letter-spacing:-.01em;color:#fff}
+  .entry .sub{margin-top:6px;font-family:var(--display);font-style:italic;font-size:22px;color:var(--brand-200)}
+  .entry p{font-size:17px;line-height:1.8;color:rgba(238,246,241,.78)}
+
+  /* ── Campfire teaser (homepage CTA) ── */
+  .campfire-section{padding:80px 24px 140px;position:relative}
+  .campfire-section .head{max-width:1200px;margin:0 auto 36px;padding:0 16px}
+  .campfire-section h2{
+    font-size:clamp(2.5rem,6.4vw,5.4rem);font-weight:700;line-height:.92;letter-spacing:-.02em;text-transform:uppercase;color:#fff;max-width:14ch;
+  }
+  .campfire-section h2 em{font-family:var(--display);font-style:italic;font-weight:400;text-transform:none;color:var(--brand-200);letter-spacing:-.012em}
+  .campfire-section .lead{margin-top:22px;color:rgba(238,246,241,.7);font-size:17px;max-width:36ch;line-height:1.55}
+  .teaser{
+    position:relative;display:block;max-width:1200px;margin:36px auto 0;border-radius:32px;overflow:hidden;isolation:isolate;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(245,210,139,.18), transparent 60%),
+      linear-gradient(180deg, #0a1f12 0%, #08180e 60%, #06160d 100%);
+    border:1px solid rgba(232,184,106,.18);
+    box-shadow:0 60px 120px -50px rgba(0,0,0,.7);
+    transition:transform .5s ease, box-shadow .5s ease;
+  }
+  .teaser:hover{transform:translateY(-3px);box-shadow:0 70px 140px -40px rgba(0,0,0,.8)}
+  .teaser-inner{
+    position:relative;z-index:2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+    padding:110px 24px 130px;text-align:center;min-height:520px;
+  }
+  .teaser .aura{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:720px;height:720px;max-width:130%;z-index:1;
+    background:radial-gradient(closest-side, rgba(245,210,139,.32), rgba(232,184,106,.14) 35%, rgba(232,184,106,.04) 60%, transparent 78%);
+    filter:blur(40px);pointer-events:none;animation:auraB 5s ease-in-out infinite;
+  }
+  @keyframes auraB{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.92}50%{transform:translate(-50%,-50%) scale(1.08);opacity:1}}
+  .live-pill{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ember);
+    padding:9px 18px;border-radius:999px;background:rgba(232,184,106,.08);border:1px solid rgba(232,184,106,.25);
+    backdrop-filter:blur(6px);
+  }
+  .live-pill .d{width:6px;height:6px;border-radius:50%;background:var(--ember);box-shadow:0 0 12px var(--ember-hot)}
+  .qpeek-label{margin-top:32px;font-family:var(--serif);font-style:italic;color:var(--ember);opacity:.85;font-size:15px}
+  .qpeek{
+    margin-top:14px;font-family:var(--serif);font-size:clamp(2rem,4.6vw,3.4rem);font-weight:400;
+    line-height:1.06;letter-spacing:-.012em;color:#fff;max-width:22ch;text-shadow:0 0 80px rgba(245,210,139,.18);
+  }
+  .teaser-meta{
+    margin-top:24px;display:flex;flex-wrap:wrap;justify-content:center;gap:18px;
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(238,246,241,.55);
+  }
+  .teaser-meta .sep{display:inline-block;width:18px;height:1px;background:rgba(238,246,241,.3);align-self:center}
+
+  /* ── Footer ── */
+  footer{
+    padding:80px 24px 40px;border-top:1px solid rgba(232,184,106,.08);
+    background:linear-gradient(180deg, var(--night) 0%, var(--night-deep) 100%);
+  }
+  footer .wrap{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:5fr 7fr;gap:60px}
+  @media(max-width:900px){footer .wrap{grid-template-columns:1fr;gap:40px}}
+  footer .brand-blurb{max-width:340px;color:rgba(238,246,241,.7);font-size:15px;line-height:1.55;margin-top:24px}
+  footer .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+  footer .col h3{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--brand-200)}
+  footer .col ul{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:12px}
+  footer .col a{color:rgba(238,246,241,.7);font-size:14px}
+  footer .col a:hover{color:var(--brand-200)}
+  footer .word{
+    margin-top:80px;padding-top:60px;border-top:1px solid rgba(232,184,106,.08);
+    font-family:var(--display);font-size:clamp(4rem,14vw,12rem);line-height:.85;letter-spacing:-.03em;
+    color:rgba(255,255,255,.05);user-select:none;
+  }
+  footer .meta{
+    margin-top:50px;padding-top:32px;border-top:1px solid rgba(232,184,106,.08);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(238,246,241,.45);
+  }
+</style>
+</head>
+<body>
+  <header class="siteheader">
+    <div class="row">
+      <a class="brand"><span class="pip"></span><span>The Social Project</span></a>
+      <nav class="nav">
+        <a>The Campfire</a>
+        <a>The Gift Shop</a>
+        <a class="signin">Sign in</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="grain"></div>
+    <div class="embers"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="inner">
+      <div class="topmeta">
+        <span>The Social Project — Est. 2026</span>
+        <span class="live"><span class="dot"></span> Building a movement</span>
+      </div>
+      <h1>Igniting<br/>Human <em>Connection</em></h1>
+      <p class="lead">Be yourself. Be social. Meet someone new. <strong style="color:#fff;font-weight:500">Welcome to The Social Project.</strong></p>
+      <div class="ctas">
+        <a class="btn primary">Sit at the fire →</a>
+        <a class="btn ghost">The Gift Shop</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="head"><span class="rule"></span> Why this matters <span class="rule"></span></div>
+    <div class="grid">
+      <div class="stat"><div class="v">67%</div><div class="l">of Gen Z classify as lonely — the highest of any generation</div></div>
+      <div class="stat"><div class="v">34m</div><div class="l">average daily time Americans spend socializing in 2024</div></div>
+      <div class="stat"><div class="v">5h</div><div class="l">average daily social media time for U.S. teens</div></div>
+      <div class="stat"><div class="v">1 in 4</div><div class="l">people worldwide feel lonely</div></div>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="mission">
+    <div class="wrap">
+      <h2>A short list of things <em>we refuse to compromise on.</em></h2>
+      <div class="entries">
+        <div class="entry">
+          <div>
+            <div class="cls">Practice</div>
+            <h3>REAL CONNECTION</h3>
+            <div class="sub">(in person, in full)</div>
+          </div>
+          <p>Eye contact, full attention, the same room. We treat presence as a discipline — one worth defending against every notification engineered to break it.</p>
+        </div>
+        <div class="entry">
+          <div>
+            <div class="cls">Posture</div>
+            <h3>RADICAL AUTHENTICITY</h3>
+            <div class="sub">(unfiltered, on purpose)</div>
+          </div>
+          <p>We take the curation out of being human. The unedited version of you is the most magnetic thing in any room, and the only one that builds real trust.</p>
+        </div>
+        <div class="entry">
+          <div>
+            <div class="cls">Method</div>
+            <h3>INTENTIONAL LIVING</h3>
+            <div class="sub">(less scroll, more soul)</div>
+          </div>
+          <p>We design rituals, frameworks, and gentle interruptions that nudge attention back toward the things that actually compose a meaningful life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAMPFIRE TEASER -->
+  <section class="campfire-section">
+    <div class="head">
+      <h2>Sit down at the <em>campfire.</em></h2>
+      <p class="lead">One question. Every day. Answer honestly, then see what others have to share.</p>
+    </div>
+    <a class="teaser" href="#">
+      <div class="grain"></div>
+      <div class="embers"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="aura"></div>
+      <div class="teaser-inner">
+        <div class="live-pill"><span class="d"></span> The fire is lit · 38 voices tonight</div>
+        <div class="qpeek-label">Tonight&rsquo;s question</div>
+        <div class="qpeek">What did you almost say today, but didn&rsquo;t?</div>
+        <span class="btn ember" style="margin-top:40px">Sit down at the fire →</span>
+        <div class="teaser-meta">
+          <span>Tuesday · 14 April</span>
+          <span class="sep"></span>
+          <span>The fire goes out at midnight</span>
+        </div>
+      </div>
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div>
+        <div class="brand"><span class="pip"></span><span>The Social Project</span></div>
+        <p class="brand-blurb">Igniting human connection, inspiring authenticity. A community for people who want to live more connected, more real lives.</p>
+      </div>
+      <div class="cols">
+        <div class="col"><h3>Explore</h3><ul><li><a>The Campfire</a></li><li><a>The Gift Shop</a></li></ul></div>
+        <div class="col"><h3>Company</h3><ul><li><a>Contact</a></li><li><a>Privacy Policy</a></li><li><a>Terms</a></li></ul></div>
+        <div class="col"><h3>Connect</h3><ul><li><a>Instagram</a></li><li><a>TikTok</a></li><li><a>Twitter / X</a></li></ul></div>
+      </div>
+    </div>
+    <div class="word">The Social Project</div>
+    <div class="meta"><span>© 2026 The Social Project</span><span>All rights reserved</span></div>
+  </footer>
+</body>
+</html>
