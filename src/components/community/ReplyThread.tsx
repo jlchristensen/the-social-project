@@ -39,11 +39,21 @@ export default function ReplyThread({
       const supabase = createClient();
       const { data } = await supabase
         .from("answer_replies")
-        .select("*, profiles:user_id(display_name)")
+        .select("*")
         .eq("answer_id", answerId)
         .order("created_at", { ascending: true });
 
-      if (data) {
+      if (data && data.length > 0) {
+        const userIds = [...new Set(data.map((r) => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", userIds);
+
+        const profileMap = new Map(
+          (profiles ?? []).map((p) => [p.id, p.display_name])
+        );
+
         const mapped: Reply[] = data.map((r) => ({
           id: r.id,
           answer_id: r.answer_id,
@@ -51,9 +61,7 @@ export default function ReplyThread({
           body: r.body,
           is_anonymous: r.is_anonymous,
           created_at: r.created_at,
-          display_name:
-            (r.profiles as { display_name: string | null })?.display_name ??
-            null,
+          display_name: profileMap.get(r.user_id) ?? null,
         }));
         setReplies(mapped);
       }
@@ -89,7 +97,7 @@ export default function ReplyThread({
         body: body.trim(),
         is_anonymous: isAnonymous,
       })
-      .select("*, profiles:user_id(display_name)")
+      .select("*")
       .single();
 
     setSubmitting(false);
@@ -100,6 +108,12 @@ export default function ReplyThread({
     }
 
     if (data) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .single();
+
       const newReply: Reply = {
         id: data.id,
         answer_id: data.answer_id,
@@ -107,9 +121,7 @@ export default function ReplyThread({
         body: data.body,
         is_anonymous: data.is_anonymous,
         created_at: data.created_at,
-        display_name:
-          (data.profiles as { display_name: string | null })?.display_name ??
-          null,
+        display_name: profile?.display_name ?? null,
       };
       setReplies((prev) => [...prev, newReply]);
     }
