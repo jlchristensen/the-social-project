@@ -31,7 +31,10 @@ function DarkPanel({
 
 export default async function CommunityPage() {
   const supabase = await createClient();
-  const today = new Date().toISOString().split("T")[0];
+  // Use US Central time so the question matches the user's day, not UTC
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/Chicago",
+  });
 
   const { data: question } = await supabase
     .from("daily_questions")
@@ -66,37 +69,67 @@ export default async function CommunityPage() {
     hasAnswered = !!ownAnswer;
 
     if (hasAnswered) {
+      // Fetch answers, upvotes, and replies separately to avoid join issues
       const { data: answersData } = await supabase
         .from("answers")
-        .select(
-          "*, profiles:user_id(display_name), answer_upvotes(user_id), answer_replies(id)"
-        )
+        .select("*")
         .eq("question_id", question.id)
         .order("created_at", { ascending: false });
 
-      if (answersData) {
-        answers = answersData.map((a) => ({
-          id: a.id,
-          question_id: a.question_id,
-          user_id: a.user_id,
-          body: a.body,
-          is_anonymous: a.is_anonymous,
-          created_at: a.created_at,
-          display_name:
-            (a.profiles as { display_name: string | null })?.display_name ??
-            null,
-          upvote_count: Array.isArray(a.answer_upvotes)
-            ? a.answer_upvotes.length
-            : 0,
-          reply_count: Array.isArray(a.answer_replies)
-            ? a.answer_replies.length
-            : 0,
-          has_upvoted: Array.isArray(a.answer_upvotes)
-            ? a.answer_upvotes.some(
-                (u: { user_id: string }) => u.user_id === user.id
-              )
-            : false,
-        }));
+      if (answersData && answersData.length > 0) {
+        // Get display names for all answer authors
+        const userIds = [...new Set(answersData.map((a) => a.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", userIds);
+
+        const profileMap = new Map(
+          (profiles ?? []).map((p) => [p.id, p.display_name])
+        );
+
+        // Get upvote counts and whether current user upvoted
+        const answerIds = answersData.map((a) => a.id);
+        const { data: upvotes } = await supabase
+          .from("answer_upvotes")
+          .select("answer_id, user_id")
+          .in("answer_id", answerIds);
+
+        const { data: replies } = await supabase
+          .from("answer_replies")
+          .select("answer_id")
+          .in("answer_id", answerIds);
+
+        const upvotesByAnswer = new Map<string, string[]>();
+        for (const u of upvotes ?? []) {
+          const list = upvotesByAnswer.get(u.answer_id) ?? [];
+          list.push(u.user_id);
+          upvotesByAnswer.set(u.answer_id, list);
+        }
+
+        const replyCountByAnswer = new Map<string, number>();
+        for (const r of replies ?? []) {
+          replyCountByAnswer.set(
+            r.answer_id,
+            (replyCountByAnswer.get(r.answer_id) ?? 0) + 1
+          );
+        }
+
+        answers = answersData.map((a) => {
+          const voters = upvotesByAnswer.get(a.id) ?? [];
+          return {
+            id: a.id,
+            question_id: a.question_id,
+            user_id: a.user_id,
+            body: a.body,
+            is_anonymous: a.is_anonymous,
+            created_at: a.created_at,
+            display_name: profileMap.get(a.user_id) ?? null,
+            upvote_count: voters.length,
+            reply_count: replyCountByAnswer.get(a.id) ?? 0,
+            has_upvoted: voters.includes(user.id),
+          };
+        });
       }
     }
   }
