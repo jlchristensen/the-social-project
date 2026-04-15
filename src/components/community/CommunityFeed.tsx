@@ -72,7 +72,7 @@ export default function CommunityFeed({
           No one has spoken yet. You&apos;re the first voice tonight.
         </p>
       ) : (
-        <div className="columns-1 gap-5 md:columns-2">
+        <div className="columns-1 gap-5">
           {ownAnswer && <AnswerCard answer={ownAnswer} isOwn />}
           {sortedOthers.map((answer) => (
             <AnswerCard key={answer.id} answer={answer} isOwn={false} />

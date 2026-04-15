@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Campfire · v3 · Logbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-50:#eef6f1; --brand-100:#d0e8d9; --brand-300:#5fad80;
+    --brand-700:#003b20; --brand-900:#00200f;
+    --night:#06160d; --paper:#f3ead6; --paper-shade:#e8dcbf;
+    --ink:#2a1f12; --ink-soft:#5b4a30;
+    --ember:#c98a2c; --ember-hot:#e8b86a;
+    --serif:'Instrument Serif', Georgia, serif;
+    --ui:'Figtree', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:var(--ui);color:var(--brand-50)}
+  body{
+    min-height:100vh;overflow-x:hidden;
+    background:
+      radial-gradient(60% 40% at 50% 0%, rgba(232,184,106,.18), transparent 60%),
+      radial-gradient(70% 50% at 50% 100%, rgba(232,184,106,.10), transparent 60%),
+      linear-gradient(180deg, #06160d 0%, #04130a 70%, #02100780 100%);
+  }
+
+  /* drifting embers behind everything */
+  .embers{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .embers i{position:absolute;bottom:-10px;width:3px;height:3px;background:var(--ember-hot);border-radius:50%;
+    box-shadow:0 0 10px var(--ember-hot),0 0 18px var(--ember);opacity:.5;animation:rise linear infinite}
+  .embers i:nth-child(1){left:6%;animation-duration:14s}
+  .embers i:nth-child(2){left:18%;animation-duration:18s;animation-delay:-7s;width:2px;height:2px}
+  .embers i:nth-child(3){left:34%;animation-duration:16s;animation-delay:-11s}
+  .embers i:nth-child(4){left:50%;animation-duration:19s;animation-delay:-4s;width:2px;height:2px}
+  .embers i:nth-child(5){left:66%;animation-duration:15s;animation-delay:-9s}
+  .embers i:nth-child(6){left:80%;animation-duration:17s;animation-delay:-1s}
+  .embers i:nth-child(7){left:92%;animation-duration:13s;animation-delay:-5s;width:2px;height:2px}
+  @keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.6}80%{opacity:.25}100%{transform:translateY(-110vh) translateX(20px);opacity:0}}
+
+  /* sticky breath of the fire */
+  .firebar{
+    position:sticky;top:0;z-index:30;
+    backdrop-filter:blur(16px) saturate(140%);
+    background:rgba(4,15,9,.55);
+    border-bottom:1px solid rgba(232,184,106,.10);
+  }
+  .firebar .row{
+    max-width:760px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:14px;
+  }
+  .flame{
+    width:22px;height:22px;border-radius:50%;
+    background:radial-gradient(circle at 50% 60%, var(--ember-hot), var(--ember) 40%, transparent 70%);
+    box-shadow:0 0 22px rgba(232,184,106,.5);animation:flicker 2.6s ease-in-out infinite;
+  }
+  @keyframes flicker{0%,100%{transform:scale(1);opacity:.95}40%{transform:scale(1.08);opacity:1}70%{transform:scale(.96);opacity:.85}}
+  .firebar .label{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--ember-hot);opacity:.9}
+  .firebar .live{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--brand-50);opacity:.75}
+  .firebar .live i{width:5px;height:5px;border-radius:50%;background:var(--brand-300);box-shadow:0 0 10px var(--brand-300);animation:flicker 2s infinite}
+
+  /* ── The Logbook ── */
+  .book{
+    position:relative;z-index:2;
+    max-width:680px;margin:60px auto 0;
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(255,235,180,.55), transparent 60%),
+      linear-gradient(180deg, #f6ecd6 0%, #f0e4cb 50%, #ead8b8 100%);
+    color:var(--ink);
+    border-radius:6px;
+    box-shadow:
+      0 60px 120px -40px rgba(0,0,0,.6),
+      0 0 0 1px rgba(0,0,0,.08),
+      inset 0 0 60px rgba(180,140,80,.12);
+    padding:64px 60px 48px;
+    position:relative;
+  }
+  .book::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:120px;border-top-left-radius:6px;border-top-right-radius:6px;
+    background:linear-gradient(180deg, rgba(245,210,139,.55), transparent);pointer-events:none;
+  }
+  .book::after{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:6px;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.18 0 0 0 0 0.12 0 0 0 0 0.06 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.22;mix-blend-mode:multiply;
+  }
+  @media(max-width:640px){.book{padding:44px 28px;margin:32px 14px 0;border-radius:4px}}
+
+  .chapter-mark{
+    position:relative;z-index:2;text-align:center;
+    font-family:var(--ui);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--ember);
+  }
+  .chapter-mark .rule{display:inline-block;width:34px;height:1px;background:var(--ember);vertical-align:middle;margin:0 10px;opacity:.7}
+
+  .date{
+    position:relative;z-index:2;text-align:center;margin-top:6px;
+    font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);
+  }
+
+  .question{
+    position:relative;z-index:2;text-align:center;margin-top:18px;
+    font-family:var(--serif);font-size:clamp(2rem,5.4vw,3.4rem);
+    line-height:1.05;letter-spacing:-.012em;color:var(--ink);
+    max-width:18ch;margin-left:auto;margin-right:auto;
+  }
+  .question em{
+    font-style:italic;color:var(--ember);
+    background:linear-gradient(180deg, transparent 60%, rgba(232,184,106,.30) 60%);
+    padding:0 4px;
+  }
+
+  /* compose, written into the book */
+  .compose{
+    position:relative;z-index:2;margin:36px auto 0;max-width:520px;
+    border-top:1px dashed rgba(91,74,48,.35);
+    border-bottom:1px dashed rgba(91,74,48,.35);
+    padding:22px 0;
+  }
+  .compose .lead{
+    font-family:var(--ui);font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--ember);text-align:center;margin-bottom:14px;
+  }
+  .compose textarea{
+    width:100%;min-height:96px;background:transparent;border:none;outline:none;resize:none;
+    color:var(--ink);font-family:var(--serif);font-size:22px;line-height:1.5;
+    background-image:repeating-linear-gradient(180deg, transparent 0, transparent 33px, rgba(91,74,48,.18) 33px, rgba(91,74,48,.18) 34px);
+  }
+  .compose textarea::placeholder{color:rgba(91,74,48,.55);font-style:italic}
+  .compose .row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:12px}
+  .compose .anon{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft)}
+  .compose .anon input{accent-color:var(--ember)}
+  .quill{
+    background:var(--ink);color:var(--paper);border:none;border-radius:999px;
+    padding:10px 20px;font-family:var(--ui);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    cursor:pointer;
+  }
+
+  /* divider — "the others speak" */
+  .turnpage{
+    position:relative;z-index:2;text-align:center;margin-top:42px;
+    font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft);
+  }
+  .turnpage .o{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ember);margin:0 8px;vertical-align:middle;box-shadow:0 0 10px var(--ember-hot)}
+
+  /* ── Entries (other voices) ── */
+  .entries{position:relative;z-index:2;margin-top:30px}
+  .entry{
+    padding:24px 0;border-top:1px solid rgba(91,74,48,.20);
+  }
+  .entry:first-child{border-top:none}
+  .entry .head{
+    display:flex;align-items:baseline;gap:10px;
+    font-family:var(--ui);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ember);
+  }
+  .entry .head .name{font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)}
+  .entry .head .when{color:var(--ink-soft);opacity:.8;font-size:10px}
+  .entry p{
+    margin-top:10px;font-family:var(--serif);font-size:21px;line-height:1.5;color:var(--ink);
+    letter-spacing:-.003em;
+  }
+  .entry .react{
+    margin-top:12px;display:flex;align-items:center;gap:18px;
+    font-family:var(--ui);font-size:11px;letter-spacing:.06em;color:var(--ink-soft);
+  }
+  .entry .react span{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .entry .react span:hover{color:var(--ember)}
+
+  .closing{
+    position:relative;z-index:2;margin-top:48px;text-align:center;
+    font-family:var(--serif);font-style:italic;color:var(--ink-soft);font-size:14px;
+  }
+  .closing .seal{
+    display:inline-block;width:36px;height:36px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, var(--ember-hot), var(--ember) 60%, #8a5a18);
+    box-shadow:0 0 24px rgba(232,184,106,.45), inset 0 -2px 6px rgba(0,0,0,.25);
+    margin-bottom:10px;
+  }
+
+  .footer{
+    position:relative;z-index:2;text-align:center;padding:60px 22px 100px;
+    color:var(--brand-100);opacity:.5;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  }
+  .footer span{color:var(--ember-hot);opacity:.95}
+</style>
+</head>
+<body>
+  <div class="embers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <header class="firebar">
+    <div class="row">
+      <div class="flame"></div>
+      <div class="label">The Campfire · A logbook of small honest things</div>
+      <div class="live"><i></i> 38 around the fire</div>
+    </div>
+  </header>
+
+  <section class="book">
+    <div class="chapter-mark"><span class="rule"></span> Entry No. 47 <span class="rule"></span></div>
+    <div class="date">Tuesday, the fourteenth of April</div>
+
+    <h1 class="question">What did you <em>almost</em> say today, but didn&rsquo;t?</h1>
+
+    <div class="compose">
+      <div class="lead">Your entry</div>
+      <textarea placeholder="Begin honestly. The page can hold it."></textarea>
+      <div class="row">
+        <label class="anon"><input type="checkbox" /> Sign as anonymous</label>
+        <button class="quill">Set in ink →</button>
+      </div>
+    </div>
+
+    <div class="turnpage">— <span class="o"></span> the others speak <span class="o"></span> —</div>
+
+    <div class="entries">
+      <article class="entry">
+        <div class="head"><span class="name">Mara</span><span class="when">· 22 min ago · Brooklyn</span></div>
+        <p>I almost told my dad I was proud of him. He looked tired and small at dinner. I don&rsquo;t know why I held it back &mdash; maybe because we&rsquo;ve never said things like that out loud.</p>
+        <div class="react"><span>♡ 14 held</span><span>↳ 3 replies</span></div>
+      </article>
+
+      <article class="entry">
+        <div class="head"><span class="name">Anonymous</span><span class="when">· 41 min ago</span></div>
+        <p>That I&rsquo;m thinking about leaving. Not loudly &mdash; just a sentence that&rsquo;s been forming for months. I let the moment pass.</p>
+        <div class="react"><span>♡ 27 held</span><span>↳ 8 replies</span></div>
+      </article>
+
+      <article class="entry">
+        <div class="head"><span class="name">Jess</span><span class="when">· an hour ago · Austin</span></div>
+        <p>&ldquo;I miss you.&rdquo; Two words. He was right there. I drank my coffee instead.</p>
+        <div class="react"><span>♡ 52 held</span><span>↳ 12 replies</span></div>
+      </article>
+
+      <article class="entry">
+        <div class="head"><span class="name">Devon</span><span class="when">· 2 hours ago</span></div>
+        <p>To my coworker: &ldquo;you don&rsquo;t have to apologize for being good at this.&rdquo; She made herself smaller in a meeting today and it bothered me more than I let on.</p>
+        <div class="react"><span>♡ 31 held</span><span>↳ 5 replies</span></div>
+      </article>
+
+      <article class="entry">
+        <div class="head"><span class="name">Anonymous</span><span class="when">· 3 hours ago</span></div>
+        <p>That I&rsquo;ve been lonely for a long time and the people closest to me don&rsquo;t see it.</p>
+        <div class="react"><span>♡ 88 held</span><span>↳ 21 replies</span></div>
+      </article>
+    </div>
+
+    <div class="closing">
+      <div class="seal"></div>
+      <div>The page closes at midnight.<br/>A new one is set out in the morning.</div>
+    </div>
+  </section>
+
+  <div class="footer">The fire is tended nightly · <span>tomorrow&rsquo;s question is being written</span></div>
+</body>
+</html>

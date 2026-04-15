@@ -1,10 +1,45 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
+import { createClient } from "@/lib/supabase/server";
 
-export default function CampfireSection() {
+function Embers() {
   return (
-    <section className="relative overflow-hidden bg-brand-50 pt-12 pb-16 md:pt-16 md:pb-20">
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+    <div className="campfire-embers" aria-hidden="true">
+      <i /><i /><i /><i /><i /><i /><i />
+    </div>
+  );
+}
+
+export default async function CampfireSection() {
+  const supabase = await createClient();
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/Chicago",
+  });
+
+  const { data: question } = await supabase
+    .from("daily_questions")
+    .select("*")
+    .eq("active_date", today)
+    .single();
+
+  let answerCount = 0;
+  if (question) {
+    const { count } = await supabase
+      .from("answers")
+      .select("*", { count: "exact", head: true })
+      .eq("question_id", question.id);
+    answerCount = count ?? 0;
+  }
+
+  const dateLabel = new Date(`${today}T00:00:00`).toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
+  return (
+    <section className="bg-brand-50 px-6 pt-12 pb-20 md:pt-16 md:pb-28">
+      <div className="mx-auto max-w-7xl">
         <Reveal>
           <h2 className="max-w-5xl text-[clamp(2.5rem,7vw,6rem)] font-bold uppercase leading-[0.88] tracking-[-0.02em] text-brand-900">
             Sit down at the{" "}
@@ -19,39 +54,61 @@ export default function CampfireSection() {
         </Reveal>
 
         <Reveal delay={150}>
-          <Link href="/community" className="group mt-16 block">
-            <article className="relative isolate flex min-h-[20rem] flex-col items-center justify-center overflow-hidden rounded-[2rem] border border-brand-900/10 p-10 text-center text-white transition-all duration-700 hover:-translate-y-1 hover:shadow-[0_40px_80px_-30px_rgba(0,32,15,0.45)] md:p-14">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-brand-700 via-brand-600 to-brand-900" />
-              <div className="absolute -right-24 -top-24 -z-10 h-[24rem] w-[24rem] rounded-full bg-amber-400/10 blur-[80px] transition-transform duration-700 group-hover:scale-125" />
-              <div className="absolute -left-16 -bottom-16 -z-10 h-[18rem] w-[18rem] rounded-full bg-orange-400/8 blur-[60px] transition-transform duration-700 group-hover:scale-110" />
+          <Link href="/community" className="group mt-12 block md:mt-16">
+            <article
+              className="relative isolate overflow-hidden rounded-[2rem] text-brand-50 transition-all duration-700 hover:-translate-y-1 hover:shadow-[0_70px_140px_-50px_rgba(0,32,15,0.65),0_0_0_1px_rgba(0,32,15,0.08)]"
+              style={{
+                background:
+                  "radial-gradient(60% 50% at 50% 0%, rgba(245,210,139,0.18), transparent 60%)," +
+                  "radial-gradient(70% 60% at 50% 100%, rgba(232,184,106,0.10), transparent 60%)," +
+                  "linear-gradient(180deg, #08180e 0%, #06160d 60%, #04130a 100%)",
+                boxShadow:
+                  "0 60px 120px -50px rgba(0,32,15,0.55), 0 0 0 1px rgba(0,32,15,0.06)",
+              }}
+            >
               <div className="grain" />
+              <Embers />
 
-              <div className="relative">
-                <svg
-                  className="mx-auto h-12 w-12 text-amber-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"
-                  />
-                </svg>
+              {/* Breathing aura behind the question */}
+              <div
+                className="campfire-aura"
+                style={{ top: "42%", width: 680, height: 680 }}
+              />
 
-                <h3 className="mt-6 font-display text-3xl leading-[1.05] md:text-[2.4rem]">
-                  Today&apos;s question is live
-                </h3>
+              <div className="relative flex min-h-[28rem] flex-col items-center justify-center px-6 py-20 text-center md:min-h-[32rem] md:px-10 md:py-24">
+                {/* Live status pill */}
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-ember/30 bg-ember/[0.08] px-4 py-2 font-figtree text-[10px] font-medium uppercase tracking-[0.32em] text-ember backdrop-blur-sm md:text-[11px]">
+                  <span className="campfire-gate-dot h-1.5 w-1.5 rounded-full bg-ember shadow-[0_0_12px_rgba(245,210,139,0.9)]" />
+                  {question
+                    ? `The fire is lit · ${answerCount} ${
+                        answerCount === 1 ? "voice" : "voices"
+                      } tonight`
+                    : "The fire is quiet tonight"}
+                </div>
 
-                <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-all duration-500 group-hover:border-white group-hover:bg-white/20">
-                  Answer now
+                {question ? (
+                  <>
+                    <p className="mt-8 font-serif text-[15px] italic text-ember/80 md:text-base">
+                      Tonight&rsquo;s question
+                    </p>
+                    <h3 className="mt-3 max-w-[22ch] font-serif text-[clamp(2rem,5vw,3.4rem)] leading-[1.06] tracking-[-0.012em] text-brand-50 [text-shadow:0_0_80px_rgba(245,210,139,0.18)]">
+                      {question.question_text}
+                    </h3>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-8 font-serif text-[15px] italic text-ember/80 md:text-base">
+                      Tomorrow&rsquo;s question
+                    </p>
+                    <h3 className="mt-3 max-w-[22ch] font-serif text-[clamp(2rem,5vw,3.4rem)] leading-[1.06] tracking-[-0.012em] text-brand-50 [text-shadow:0_0_80px_rgba(245,210,139,0.18)]">
+                      A new question is being crafted.
+                    </h3>
+                  </>
+                )}
+
+                {/* CTA */}
+                <span className="mt-10 inline-flex items-center gap-3 rounded-full bg-ember px-7 py-4 font-figtree text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-900 shadow-[0_0_40px_rgba(245,210,139,0.4)] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_56px_rgba(245,210,139,0.55)] md:text-[12px]">
+                  Sit down at the fire
                   <svg
                     className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
                     viewBox="0 0 24 24"
@@ -66,7 +123,16 @@ export default function CampfireSection() {
                     />
                   </svg>
                 </span>
+
+                {/* Foot meta */}
+                <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-figtree text-[10px] uppercase tracking-[0.18em] text-brand-50/55 md:text-[11px]">
+                  <span>{dateLabel}</span>
+                  <span className="hidden h-px w-4 bg-brand-50/30 sm:inline-block" />
+                  <span>The fire goes out at midnight</span>
+                </div>
               </div>
+
+              <div className="tree-line hidden md:block" aria-hidden="true" />
             </article>
           </Link>
         </Reveal>

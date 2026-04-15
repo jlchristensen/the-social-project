@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Campfire · v2 · App Feel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-50:#eef6f1; --brand-100:#d0e8d9; --brand-300:#5fad80;
+    --brand-700:#003b20; --brand-900:#00200f;
+    --night:#04120a; --panel:#0a1f12; --panel-2:#0d2618;
+    --ember:#E8B86A; --ember-hot:#F5D28B;
+    --serif:'Instrument Serif', Georgia, serif;
+    --ui:'Figtree', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--night);color:var(--brand-50);font-family:var(--ui)}
+  body{min-height:100vh;overflow-x:hidden;
+    background:
+      radial-gradient(60% 40% at 50% -5%, rgba(232,184,106,.10), transparent 60%),
+      radial-gradient(70% 50% at 50% 105%, rgba(0,77,41,.45), transparent 60%),
+      var(--night);
+  }
+
+  /* ── App-shell column (feels like a phone, even on desktop) ── */
+  .app{
+    position:relative;max-width:520px;margin:0 auto;min-height:100vh;
+    background:linear-gradient(180deg, rgba(10,31,18,.0) 0%, rgba(10,31,18,.6) 12%, rgba(10,31,18,.85) 30%, rgba(10,31,18,.95) 100%);
+    border-left:1px solid rgba(232,184,106,.06);
+    border-right:1px solid rgba(232,184,106,.06);
+  }
+
+  /* ── Sticky question header (always present, the heart of the app) ── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(8,22,14,.72);
+    backdrop-filter:blur(20px) saturate(140%);
+    border-bottom:1px solid rgba(232,184,106,.10);
+  }
+  .topbar .head{
+    padding:14px 18px 10px;display:flex;align-items:center;gap:12px;
+  }
+  .ring{
+    width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 65%, var(--ember-hot), var(--ember) 35%, transparent 70%);
+    box-shadow:0 0 22px rgba(245,210,139,.45);animation:beat 2.4s ease-in-out infinite;
+  }
+  @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .head .col{flex:1;min-width:0}
+  .head .l1{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ember);opacity:.85}
+  .head .l2{font-size:13px;color:var(--brand-50);opacity:.8;margin-top:2px}
+  .head .live{
+    display:flex;align-items:center;gap:6px;font-size:11px;
+    background:rgba(95,173,128,.10);border:1px solid rgba(95,173,128,.25);
+    padding:4px 10px;border-radius:999px;color:var(--brand-100);
+  }
+  .head .live i{width:5px;height:5px;border-radius:50%;background:var(--brand-300);box-shadow:0 0 10px var(--brand-300);animation:beat 2s infinite}
+
+  .qline{
+    padding:0 18px 16px;display:flex;align-items:center;gap:10px;
+  }
+  .qline h1{
+    font-family:var(--serif);font-size:21px;line-height:1.25;color:var(--brand-50);
+    flex:1;letter-spacing:-.005em;
+  }
+  .qline .open{
+    flex:none;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ember);background:rgba(232,184,106,.10);border:1px solid rgba(232,184,106,.30);
+    padding:6px 12px;border-radius:999px;
+  }
+
+  /* ── Hero question card (the moment, big, before scrolling) ── */
+  .hero{
+    position:relative;padding:64px 22px 28px;text-align:center;
+  }
+  .hero::before{
+    content:"";position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);
+    width:520px;height:520px;max-width:130%;border-radius:50%;
+    background:radial-gradient(closest-side, rgba(245,210,139,.28), rgba(232,184,106,.08) 40%, transparent 70%);
+    filter:blur(36px);animation:auraB 5s ease-in-out infinite;pointer-events:none;
+  }
+  @keyframes auraB{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.9}50%{transform:translate(-50%,-50%) scale(1.07);opacity:1}}
+  .hero .stamp{
+    position:relative;display:inline-flex;align-items:center;gap:10px;
+    font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ember);
+  }
+  .hero .stamp .d{width:5px;height:5px;border-radius:50%;background:var(--ember);box-shadow:0 0 10px var(--ember-hot)}
+  .hero h2{
+    position:relative;font-family:var(--serif);
+    font-size:clamp(2.2rem,8vw,3.4rem);line-height:1.05;letter-spacing:-.012em;
+    margin-top:18px;text-shadow:0 0 70px rgba(245,210,139,.18);
+  }
+  .hero p.sub{
+    position:relative;margin-top:14px;font-size:14px;color:var(--brand-100);opacity:.7;
+    font-style:italic;font-family:var(--serif);
+  }
+
+  /* ── Compose ── */
+  .compose{
+    margin:24px 18px 8px;border-radius:20px;padding:1px;
+    background:linear-gradient(160deg, rgba(232,184,106,.55), rgba(232,184,106,.10) 60%);
+  }
+  .compose .in{
+    background:rgba(6,18,11,.85);border-radius:19px;padding:18px;
+  }
+  .compose textarea{
+    width:100%;min-height:96px;background:transparent;border:none;outline:none;resize:none;
+    color:var(--brand-50);font-family:var(--serif);font-size:19px;line-height:1.45;
+  }
+  .compose textarea::placeholder{color:rgba(238,246,241,.35);font-style:italic}
+  .compose .ctrl{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:10px}
+  .compose .anon{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--brand-100);opacity:.75}
+  .compose .anon input{accent-color:var(--ember)}
+  .send{
+    background:var(--ember);color:var(--brand-900);border:none;border-radius:999px;
+    padding:10px 18px;font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+    box-shadow:0 0 26px rgba(245,210,139,.35);
+  }
+
+  /* ── Tab strip (the app feel) ── */
+  .tabs{
+    position:sticky;top:96px;z-index:40;
+    margin-top:24px;background:rgba(6,18,11,.78);backdrop-filter:blur(16px);
+    border-top:1px solid rgba(232,184,106,.08);border-bottom:1px solid rgba(232,184,106,.08);
+    display:flex;align-items:center;gap:0;padding:0 12px;
+  }
+  .tabs button{
+    flex:1;background:transparent;border:none;color:var(--brand-100);opacity:.55;
+    font-family:var(--ui);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    padding:14px 8px;cursor:pointer;position:relative;
+  }
+  .tabs button.active{color:var(--ember);opacity:1}
+  .tabs button.active::after{
+    content:"";position:absolute;left:14%;right:14%;bottom:-1px;height:2px;background:var(--ember);border-radius:2px;
+    box-shadow:0 0 12px var(--ember);
+  }
+
+  /* ── Voice cards (instagram-feed feel) ── */
+  .feed{padding:8px 0 120px}
+  .voice{
+    padding:22px 18px 18px;border-bottom:1px solid rgba(232,184,106,.06);
+    position:relative;
+  }
+  .voice .who{display:flex;align-items:center;gap:10px}
+  .av{
+    width:32px;height:32px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #2c4f3a, #0a1f12);
+    border:1px solid rgba(232,184,106,.22);display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);color:var(--ember);font-size:13px;
+  }
+  .who .meta{flex:1;min-width:0;font-size:12px;color:var(--brand-100);opacity:.75}
+  .who .meta b{color:var(--brand-50);font-weight:500}
+  .who .more{font-size:18px;color:var(--brand-100);opacity:.4}
+
+  .voice p{
+    margin-top:12px;font-family:var(--serif);font-size:19px;line-height:1.5;color:#f3f9f4;letter-spacing:-.003em;
+  }
+  .actions{margin-top:14px;display:flex;align-items:center;gap:18px;font-size:12px;color:var(--brand-100);opacity:.7}
+  .actions span{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .actions span:hover{color:var(--ember);opacity:1}
+  .actions .stretch{flex:1}
+  .actions .save{opacity:.55}
+
+  /* New voice indicator */
+  .newvoices{
+    margin:18px;padding:10px 14px;border-radius:999px;
+    background:rgba(232,184,106,.10);border:1px solid rgba(232,184,106,.30);
+    color:var(--ember);text-align:center;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    font-weight:600;cursor:pointer;
+  }
+
+  .footer{padding:40px 18px 80px;text-align:center;color:var(--brand-100);opacity:.45;
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase}
+  .footer span{color:var(--ember);opacity:.85}
+
+  /* drifting embers behind */
+  .embers{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .embers i{position:absolute;bottom:-10px;width:3px;height:3px;background:var(--ember);border-radius:50%;
+    box-shadow:0 0 10px var(--ember-hot),0 0 18px var(--ember);opacity:.5;animation:rise linear infinite}
+  .embers i:nth-child(1){left:8%;animation-duration:18s}
+  .embers i:nth-child(2){left:24%;animation-duration:22s;animation-delay:-7s;width:2px;height:2px}
+  .embers i:nth-child(3){left:42%;animation-duration:20s;animation-delay:-11s}
+  .embers i:nth-child(4){left:62%;animation-duration:24s;animation-delay:-4s;width:2px;height:2px}
+  .embers i:nth-child(5){left:78%;animation-duration:19s;animation-delay:-9s}
+  .embers i:nth-child(6){left:90%;animation-duration:21s;animation-delay:-1s;width:2px;height:2px}
+  @keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.6}80%{opacity:.25}100%{transform:translateY(-105vh) translateX(20px);opacity:0}}
+</style>
+</head>
+<body>
+  <div class="embers"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="head">
+        <div class="ring"></div>
+        <div class="col">
+          <div class="l1">The Campfire</div>
+          <div class="l2">Tuesday night · the fire is lit</div>
+        </div>
+        <div class="live"><i></i> 38 here</div>
+      </div>
+      <div class="qline">
+        <h1>What did you almost say today, but didn&rsquo;t?</h1>
+        <div class="open">Open</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="stamp"><span class="d"></span> Tonight&rsquo;s question</div>
+      <h2>What did you almost say today, but didn&rsquo;t?</h2>
+      <p class="sub">Speak first. The circle opens after.</p>
+
+      <div class="compose">
+        <div class="in">
+          <textarea placeholder="The thing that almost left your mouth…"></textarea>
+          <div class="ctrl">
+            <label class="anon"><input type="checkbox" /> Stay anonymous</label>
+            <button class="send">Add to the fire →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="active">Around the fire</button>
+      <button>Most held</button>
+      <button>Yours</button>
+    </nav>
+
+    <section class="feed">
+      <div class="newvoices">↑ 4 new voices · tap to gather</div>
+
+      <article class="voice">
+        <div class="who">
+          <div class="av">M</div>
+          <div class="meta"><b>Mara</b> · 22 min ago · Brooklyn</div>
+          <div class="more">···</div>
+        </div>
+        <p>I almost told my dad I was proud of him. He looked tired and small at dinner. I don&rsquo;t know why I held it back &mdash; maybe because we&rsquo;ve never said things like that out loud.</p>
+        <div class="actions">
+          <span>♡ 14</span><span>↳ 3</span>
+          <span class="stretch"></span>
+          <span class="save">⌄ keep</span>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="who">
+          <div class="av">·</div>
+          <div class="meta"><b>anonymous</b> · 41 min ago</div>
+          <div class="more">···</div>
+        </div>
+        <p>That I&rsquo;m thinking about leaving. Not loudly &mdash; just a sentence that&rsquo;s been forming for months. I let the moment pass.</p>
+        <div class="actions">
+          <span>♡ 27</span><span>↳ 8</span>
+          <span class="stretch"></span>
+          <span class="save">⌄ keep</span>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="who">
+          <div class="av">J</div>
+          <div class="meta"><b>Jess</b> · 1 h ago · Austin</div>
+          <div class="more">···</div>
+        </div>
+        <p>&ldquo;I miss you.&rdquo; Two words. He was right there. I drank my coffee instead.</p>
+        <div class="actions">
+          <span>♡ 52</span><span>↳ 12</span>
+          <span class="stretch"></span>
+          <span class="save">⌄ keep</span>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="who">
+          <div class="av">D</div>
+          <div class="meta"><b>Devon</b> · 2 h ago</div>
+          <div class="more">···</div>
+        </div>
+        <p>To my coworker: &ldquo;you don&rsquo;t have to apologize for being good at this.&rdquo;</p>
+        <div class="actions">
+          <span>♡ 31</span><span>↳ 5</span>
+          <span class="stretch"></span>
+          <span class="save">⌄ keep</span>
+        </div>
+      </article>
+
+      <article class="voice">
+        <div class="who">
+          <div class="av">·</div>
+          <div class="meta"><b>anonymous</b> · 3 h ago</div>
+          <div class="more">···</div>
+        </div>
+        <p>That I&rsquo;ve been lonely for a long time and the people closest to me don&rsquo;t see it.</p>
+        <div class="actions">
+          <span>♡ 88</span><span>↳ 21</span>
+          <span class="stretch"></span>
+          <span class="save">⌄ keep</span>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer">The fire goes out at midnight · <span>new question tomorrow</span></div>
+  </div>
+</body>
+</html>

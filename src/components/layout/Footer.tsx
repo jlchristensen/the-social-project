@@ -14,7 +14,7 @@ const footerLinks = {
     { href: "#", label: "Instagram" },
     { href: "#", label: "TikTok" },
     { href: "#", label: "Twitter / X" },
-    { href: "#", label: "Newsletter" },
+    // { href: "#", label: "Newsletter" }, // hidden with the rest of the newsletter — restore here
   ],
 };
 

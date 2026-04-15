@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Homepage Campfire teaser · restyled</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-50:#eef6f1; --brand-100:#d0e8d9; --brand-300:#5fad80;
+    --brand-600:#004d29; --brand-700:#003b20; --brand-900:#00200f;
+    --night:#06160d;
+    --ember:#E8B86A; --ember-hot:#F5D28B;
+    --serif:'Instrument Serif', Georgia, serif;
+    --ui:'Figtree', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:var(--ui);color:var(--brand-900)}
+  body{
+    min-height:100vh;
+    background:linear-gradient(180deg, #eef6f1 0%, #f4f9f6 40%, #f8faf8 100%);
+  }
+
+  /* faux preceding section, just so the hand-off reads */
+  .above{
+    padding:80px 24px;text-align:center;color:var(--brand-900);
+  }
+  .above h3{font-family:var(--serif);font-size:34px;line-height:1.1;max-width:24ch;margin:0 auto}
+  .above p{margin-top:14px;color:rgba(0,32,15,.6);font-size:15px}
+
+  /* ── The Campfire teaser (restyled) ── */
+  .teaser-section{
+    padding:48px 24px 90px;
+  }
+  .teaser-section .head{
+    max-width:1200px;margin:0 auto 36px;
+  }
+  .teaser-section h2{
+    font-size:clamp(2.5rem,6.4vw,5.4rem);font-weight:700;
+    line-height:.92;letter-spacing:-.02em;text-transform:uppercase;color:var(--brand-900);
+    max-width:14ch;
+  }
+  .teaser-section h2 em{
+    font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;
+    color:var(--brand-600);letter-spacing:-.012em;
+  }
+  .teaser-section .lead{
+    margin-top:22px;color:rgba(0,32,15,.65);font-size:17px;max-width:36ch;line-height:1.55;
+  }
+
+  .teaser{
+    position:relative;display:block;text-decoration:none;color:var(--brand-50);
+    max-width:1200px;margin:36px auto 0;border-radius:32px;overflow:hidden;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(245,210,139,.18), transparent 60%),
+      radial-gradient(70% 60% at 50% 100%, rgba(232,184,106,.10), transparent 60%),
+      linear-gradient(180deg, #08180e 0%, #06160d 60%, #04130a 100%);
+    box-shadow:
+      0 60px 120px -50px rgba(0,32,15,.55),
+      0 0 0 1px rgba(0,32,15,.06);
+    transition:transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s;
+  }
+  .teaser:hover{
+    transform:translateY(-3px);
+    box-shadow:0 70px 140px -50px rgba(0,32,15,.65), 0 0 0 1px rgba(0,32,15,.08);
+  }
+  .teaser::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.18;mix-blend-mode:overlay;
+  }
+  .teaser .trees{
+    position:absolute;left:0;right:0;bottom:0;height:160px;pointer-events:none;
+    background:
+      radial-gradient(40% 100% at 10% 100%, rgba(0,32,15,.85), transparent 70%),
+      radial-gradient(50% 100% at 90% 100%, rgba(0,32,15,.85), transparent 70%),
+      radial-gradient(60% 120% at 50% 130%, rgba(0,24,10,.95), transparent 70%);
+  }
+
+  .teaser .inner{
+    position:relative;padding:96px 40px 110px;text-align:center;min-height:480px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  }
+  .aura{
+    position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+    width:680px;height:680px;max-width:120%;
+    background:radial-gradient(closest-side,
+      rgba(245,210,139,.30),
+      rgba(232,184,106,.14) 35%,
+      rgba(232,184,106,.04) 60%,
+      transparent 78%);
+    filter:blur(40px);pointer-events:none;
+    animation:breathe 5s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.92}50%{transform:translate(-50%,-50%) scale(1.08);opacity:1}}
+
+  /* live status pill */
+  .live{
+    position:relative;display:inline-flex;align-items:center;gap:10px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ember);
+    padding:8px 16px;border-radius:999px;
+    background:rgba(232,184,106,.08);border:1px solid rgba(232,184,106,.25);
+    backdrop-filter:blur(6px);
+  }
+  .live i{width:6px;height:6px;border-radius:50%;background:var(--ember);box-shadow:0 0 12px var(--ember-hot);animation:beat 2.4s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.15);opacity:1}}
+
+  /* the question peek */
+  .peek-label{
+    position:relative;margin-top:36px;font-family:var(--serif);font-style:italic;
+    color:var(--ember);opacity:.85;font-size:15px;letter-spacing:.01em;
+  }
+  .peek{
+    position:relative;margin-top:14px;
+    font-family:var(--serif);font-size:clamp(2rem,5vw,3.4rem);
+    line-height:1.06;letter-spacing:-.012em;color:var(--brand-50);
+    text-shadow:0 0 80px rgba(245,210,139,.18);
+    max-width:22ch;
+  }
+
+  /* CTA */
+  .cta{
+    position:relative;margin-top:44px;display:inline-flex;align-items:center;gap:12px;
+    background:var(--ember);color:var(--brand-900);
+    padding:16px 28px;border-radius:999px;
+    font-family:var(--ui);font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    box-shadow:0 0 40px rgba(245,210,139,.4);
+    transition:transform .3s ease, box-shadow .3s;
+  }
+  .teaser:hover .cta{transform:translateY(-1px);box-shadow:0 0 56px rgba(245,210,139,.55)}
+  .cta svg{width:14px;height:14px}
+
+  .meta-row{
+    position:relative;margin-top:28px;display:flex;align-items:center;gap:18px;
+    color:rgba(238,246,241,.55);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  }
+  .meta-row .sep{width:18px;height:1px;background:rgba(238,246,241,.3)}
+
+  /* drifting embers */
+  .embers{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .embers i{position:absolute;bottom:-10px;width:3px;height:3px;background:var(--ember);border-radius:50%;
+    box-shadow:0 0 10px var(--ember-hot),0 0 18px var(--ember);opacity:.55;animation:rise linear infinite}
+  .embers i:nth-child(1){left:8%;animation-duration:14s;animation-delay:-2s}
+  .embers i:nth-child(2){left:22%;animation-duration:18s;animation-delay:-7s;width:2px;height:2px}
+  .embers i:nth-child(3){left:38%;animation-duration:16s;animation-delay:-11s}
+  .embers i:nth-child(4){left:54%;animation-duration:19s;animation-delay:-4s;width:2px;height:2px}
+  .embers i:nth-child(5){left:68%;animation-duration:15s;animation-delay:-9s}
+  .embers i:nth-child(6){left:82%;animation-duration:17s;animation-delay:-1s}
+  .embers i:nth-child(7){left:92%;animation-duration:13s;animation-delay:-5s;width:2px;height:2px}
+  @keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.7}80%{opacity:.3}100%{transform:translateY(-120%) translateX(20px);opacity:0}}
+
+  .below{padding:80px 24px;text-align:center;color:rgba(0,32,15,.5);font-size:13px}
+</style>
+</head>
+<body>
+  <section class="above">
+    <h3>Real conversations. One question at a time.</h3>
+    <p>(faux preceding section — just to show the hand-off into the teaser)</p>
+  </section>
+
+  <section class="teaser-section">
+    <div class="head">
+      <h2>Sit down at the <em>campfire.</em></h2>
+      <p class="lead">One question. Every day. Answer honestly, then see what others have to share.</p>
+    </div>
+
+    <a class="teaser" href="#">
+      <div class="embers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="aura"></div>
+      <div class="inner">
+        <div class="live"><i></i> The fire is lit · 38 here tonight</div>
+
+        <div class="peek-label">Tonight&rsquo;s question</div>
+        <div class="peek">What did you almost say today, but didn&rsquo;t?</div>
+
+        <div class="cta">
+          Sit down at the fire
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </div>
+
+        <div class="meta-row">
+          <span>Tuesday · 14 April</span>
+          <span class="sep"></span>
+          <span>The fire goes out at midnight</span>
+        </div>
+      </div>
+      <div class="trees"></div>
+    </a>
+  </section>
+
+  <section class="below">↓ rest of homepage continues here ↓</section>
+</body>
+</html>

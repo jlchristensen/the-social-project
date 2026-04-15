@@ -235,6 +235,38 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────
+   Flame pulse — used by the small breathing flame icon that
+   appears in the campfire sticky sub-bar and the homepage teaser.
+   ──────────────────────────────────────────────────────────── */
+.flame-pulse {
+  animation: flame-pulse 2.6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes flame-pulse {
+  0%, 100% { transform: scale(1);    opacity: 0.95; }
+  40%      { transform: scale(1.08); opacity: 1;    }
+  70%      { transform: scale(0.96); opacity: 0.85; }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Tree line — soft dark gradient at the bottom of campfire
+   scenes, suggesting trees ringing the fire on desktop.
+   ──────────────────────────────────────────────────────────── */
+.tree-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 100% at 10% 100%, rgba(0, 32, 15, 0.85), transparent 70%),
+    radial-gradient(50% 100% at 90% 100%, rgba(0, 32, 15, 0.85), transparent 70%),
+    radial-gradient(60% 120% at 50% 130%, rgba(0, 24, 10, 0.95), transparent 70%);
+}
+
+/* ────────────────────────────────────────────────────────────
    Respect reduced motion for everything decorative.
    ──────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -245,7 +277,8 @@ body {
   .scroll-hint,
   .campfire-aura,
   .campfire-embers i,
-  .campfire-gate-dot {
+  .campfire-gate-dot,
+  .flame-pulse {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;

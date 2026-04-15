@@ -12,26 +12,14 @@ function Embers() {
   );
 }
 
-function DarkPanel({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      className={`relative overflow-hidden rounded-[28px] bg-[radial-gradient(800px_400px_at_50%_-10%,rgba(232,184,106,0.12),transparent_70%),linear-gradient(180deg,#00200f_0%,#00180a_100%)] px-6 py-12 text-brand-50 shadow-[0_40px_80px_-40px_rgba(0,32,15,0.5),0_0_0_1px_rgba(0,32,15,0.08)] md:px-16 md:py-16 ${className}`}
-    >
-      <Embers />
-      <div className="relative z-[1]">{children}</div>
-    </section>
-  );
-}
-
+/**
+ * The Campfire — one continuous immersive experience.
+ * On desktop it reads as a wide forest hearth (v1 Hearth);
+ * on mobile it tightens into a focused app shell (v2 App Feel).
+ * Both share the same data and the same behavior — only the chrome adapts.
+ */
 export default async function CommunityPage() {
   const supabase = await createClient();
-  // Use US Central time so the question matches the user's day, not UTC
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Chicago",
   });
@@ -69,7 +57,6 @@ export default async function CommunityPage() {
     hasAnswered = !!ownAnswer;
 
     if (hasAnswered) {
-      // Fetch answers, upvotes, and replies separately to avoid join issues
       const { data: answersData } = await supabase
         .from("answers")
         .select("*")
@@ -77,7 +64,6 @@ export default async function CommunityPage() {
         .order("created_at", { ascending: false });
 
       if (answersData && answersData.length > 0) {
-        // Get display names for all answer authors
         const userIds = [...new Set(answersData.map((a) => a.user_id))];
         const { data: profiles } = await supabase
           .from("profiles")
@@ -88,7 +74,6 @@ export default async function CommunityPage() {
           (profiles ?? []).map((p) => [p.id, p.display_name])
         );
 
-        // Get upvote counts and whether current user upvoted
         const answerIds = answersData.map((a) => a.id);
         const { data: upvotes } = await supabase
           .from("answer_upvotes")
@@ -134,62 +119,132 @@ export default async function CommunityPage() {
     }
   }
 
-  // No question scheduled for today — soft rest state in the campfire panel
+  // ── Scene background spans the full page (replaces the body's light wash) ──
+  const sceneBg =
+    "radial-gradient(120% 60% at 50% 0%, rgba(232,184,106,0.10), transparent 60%)," +
+    "radial-gradient(80% 50% at 50% 100%, rgba(232,184,106,0.16), transparent 60%)," +
+    "linear-gradient(180deg, #08180e 0%, #06160d 30%, #04130a 100%)";
+
+  // No question scheduled — quiet rest state inside the same scene
   if (!question) {
     return (
-      <div className="mx-auto max-w-5xl px-4 pt-28 pb-16 md:px-8 md:pt-32">
-        <DarkPanel>
-          <div className="relative py-16 text-center">
-            <div className="campfire-aura" />
-            <p className="relative font-figtree text-[11px] font-medium uppercase tracking-[0.3em] text-ember/80">
-              The fire is quiet tonight
-            </p>
-            <h1 className="relative mt-4 font-serif text-4xl leading-tight text-brand-50 md:text-5xl">
-              Today&apos;s question is being crafted.
-            </h1>
-            <p className="relative mt-4 font-figtree text-brand-50/65">
-              Check back soon — a new question drops every day.
-            </p>
-          </div>
-        </DarkPanel>
+      <div
+        className="relative min-h-screen text-brand-50"
+        style={{ background: sceneBg }}
+      >
+        <div className="grain" />
+        <Embers />
+        <div className="relative mx-auto max-w-2xl px-5 pt-32 pb-24 text-center md:pt-40">
+          <div className="campfire-aura" />
+          <p className="relative font-figtree text-[11px] font-medium uppercase tracking-[0.3em] text-ember/80">
+            The fire is quiet tonight
+          </p>
+          <h1 className="relative mt-4 font-serif text-4xl leading-tight text-brand-50 md:text-5xl">
+            Today&rsquo;s question is being crafted.
+          </h1>
+          <p className="relative mt-4 font-figtree text-brand-50/65">
+            Check back soon — a new question drops every day.
+          </p>
+        </div>
       </div>
     );
   }
 
+  const dateLabel = new Date(`${question.active_date}T00:00:00`).toLocaleDateString(
+    "en-US",
+    { weekday: "long", day: "numeric", month: "long" }
+  );
+
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-28 pb-16 md:px-8 md:pt-32">
-      {/* The Campfire — question + gate */}
-      <DarkPanel>
-        <div className="relative">
-          <div className="campfire-aura" />
-          <div className="relative">
-            <DailyQuestion
-              question={question}
-              answerCount={answerCount}
-              hasAnswered={hasAnswered}
+    <div
+      className="relative min-h-screen text-brand-50"
+      style={{ background: sceneBg }}
+    >
+      {/* Scene atmospherics — span the entire page */}
+      <div className="grain" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <Embers />
+      </div>
+
+      {/* ── Sticky sub-bar: a small breath of fire under the global header.
+            Always present so the fire feels close, on every screen size. ── */}
+      <div className="sticky top-[64px] z-30 border-y border-ember/10 bg-[rgba(4,15,9,0.55)] backdrop-blur-xl backdrop-saturate-150 md:top-[68px]">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-5 py-3 md:px-6">
+          <span
+            className="flame-pulse h-5 w-5 flex-none rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 60%, #F5D28B, #E8B86A 40%, transparent 70%)",
+              boxShadow: "0 0 22px rgba(245,210,139,0.55)",
+            }}
+            aria-hidden="true"
+          />
+          <span className="font-figtree text-[10px] font-medium uppercase tracking-[0.32em] text-ember md:text-[11px]">
+            <span className="md:hidden">The Campfire</span>
+            <span className="hidden md:inline">The Campfire · {dateLabel}</span>
+          </span>
+          <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-brand-300/30 bg-brand-300/10 px-2.5 py-1 font-figtree text-[10px] text-brand-100 md:text-[11px]">
+            <span
+              className="flame-pulse h-1.5 w-1.5 rounded-full bg-brand-300"
+              style={{ boxShadow: "0 0 10px #5fad80" }}
             />
-
-            {!hasAnswered && (
-              <div className="mt-12">
-                <AnswerGate
-                  questionId={question.id}
-                  isSignedIn={!!user}
-                  hasAnswered={hasAnswered}
-                />
-              </div>
-            )}
-          </div>
+            {answerCount} {answerCount === 1 ? "voice" : "voices"}
+          </span>
         </div>
-      </DarkPanel>
+      </div>
 
-      {/* The circle — only after answering */}
+      {/* ── The Hero: the question, lit by the fire ── */}
+      <section className="relative">
+        {/* Aura behind the question */}
+        <div
+          className="campfire-aura"
+          style={{ top: "55%", width: 720, height: 720 }}
+        />
+
+        <div className="relative mx-auto max-w-2xl px-5 pt-16 pb-10 text-center md:max-w-3xl md:px-8 md:pt-24 md:pb-14">
+          <DailyQuestion
+            question={question}
+            answerCount={answerCount}
+            hasAnswered={hasAnswered}
+          />
+
+          {!hasAnswered && (
+            <div className="mt-10 md:mt-12">
+              <AnswerGate
+                questionId={question.id}
+                isSignedIn={!!user}
+                hasAnswered={hasAnswered}
+              />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── The Circle: voices flow as one continuous river ── */}
       {hasAnswered && user && (
-        <div className="mt-7">
-          <DarkPanel>
+        <>
+          {/* Soft descent — bridges hero into the circle */}
+          <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-3 px-5 pb-2 md:max-w-3xl">
+            <span className="font-figtree text-[10px] uppercase tracking-[0.32em] text-ember/70">
+              The circle is open
+            </span>
+            <span className="block h-12 w-px bg-gradient-to-b from-transparent via-ember/60 to-transparent" />
+          </div>
+
+          <section className="relative mx-auto max-w-2xl px-5 pb-32 md:max-w-3xl md:px-8 md:pb-40">
             <CommunityFeed answers={answers} currentUserId={user.id} />
-          </DarkPanel>
-        </div>
+          </section>
+        </>
       )}
+
+      {/* Tree-line silhouettes — desktop only, frames the bottom of the scene */}
+      <div className="tree-line hidden md:block" aria-hidden="true" />
+
+      {/* Footer note — closes the night */}
+      <div className="relative pb-20 text-center font-figtree text-[10px] uppercase tracking-[0.3em] text-brand-100/45 md:text-[11px]">
+        The fire goes out at midnight ·{" "}
+        <span className="text-ember/80">new question tomorrow</span>
+      </div>
     </div>
   );
 }
