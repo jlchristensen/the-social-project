@@ -51,8 +51,9 @@ export default function ReplyThread({
           body: r.body,
           is_anonymous: r.is_anonymous,
           created_at: r.created_at,
-          display_name: (r.profiles as { display_name: string | null })
-            ?.display_name ?? null,
+          display_name:
+            (r.profiles as { display_name: string | null })?.display_name ??
+            null,
         }));
         setReplies(mapped);
       }
@@ -106,8 +107,9 @@ export default function ReplyThread({
         body: data.body,
         is_anonymous: data.is_anonymous,
         created_at: data.created_at,
-        display_name: (data.profiles as { display_name: string | null })
-          ?.display_name ?? null,
+        display_name:
+          (data.profiles as { display_name: string | null })?.display_name ??
+          null,
       };
       setReplies((prev) => [...prev, newReply]);
     }
@@ -117,38 +119,28 @@ export default function ReplyThread({
   }
 
   return (
-    <div className="mt-4 border-t border-slate-100 pt-4">
+    <div className="mt-4 border-t border-dashed border-ember/20 pt-4">
       {loadingReplies ? (
-        <p className="text-xs text-slate-400">Loading replies...</p>
+        <p className="font-figtree text-xs text-brand-50/50">
+          Loading replies…
+        </p>
       ) : (
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           {replies.map((reply) => {
             const name = reply.is_anonymous
               ? "Anonymous"
               : reply.display_name || "Community Member";
-            const initial = reply.is_anonymous
-              ? "?"
-              : (reply.display_name?.[0]?.toUpperCase() ?? "C");
-
             return (
               <div key={reply.id} className="flex gap-3">
-                <div
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${reply.is_anonymous ? "bg-slate-100 text-slate-400" : "bg-brand-50 text-brand-600"}`}
-                >
-                  {initial}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-medium text-slate-900">
-                      {name}
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      {timeAgo(reply.created_at)}
-                    </span>
-                  </div>
-                  <p className="mt-0.5 text-sm text-slate-600 whitespace-pre-line">
-                    {reply.body}
-                  </p>
+                <div className="h-6 w-6 shrink-0 rounded-full bg-gradient-to-br from-brand-300 to-brand-500" />
+                <div className="min-w-0 flex-1 font-figtree text-sm leading-relaxed text-brand-50/80">
+                  <span className="mr-2 font-serif text-[13px] italic text-ember">
+                    {name}
+                  </span>
+                  <span className="font-figtree text-[11px] uppercase tracking-[0.1em] text-brand-50/45">
+                    {timeAgo(reply.created_at)}
+                  </span>
+                  <p className="mt-0.5 whitespace-pre-line">{reply.body}</p>
                 </div>
               </div>
             );
@@ -157,37 +149,35 @@ export default function ReplyThread({
       )}
 
       {/* Reply input */}
-      <form onSubmit={handleSubmit} className="mt-4 flex gap-3">
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
         <div className="flex-1">
           <input
             type="text"
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Write a reply..."
+            placeholder="Write back…"
             maxLength={500}
-            className="w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:outline-none transition-colors"
+            className="w-full rounded-full border border-brand-50/15 bg-white/[0.03] px-4 py-2.5 font-figtree text-sm text-brand-50 placeholder:italic placeholder:text-brand-50/40 focus:border-ember/50 focus:bg-white/[0.06] focus:outline-none"
           />
-          <div className="mt-2 flex items-center gap-2 pl-4">
-            <button
-              type="button"
-              onClick={() => setIsAnonymous(!isAnonymous)}
-              className={`text-xs transition-colors ${isAnonymous ? "text-brand-600 font-medium" : "text-slate-400 hover:text-slate-600"}`}
-            >
-              {isAnonymous ? "Anonymous" : "Reply as you"}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setIsAnonymous(!isAnonymous)}
+            className={`mt-2 pl-4 font-figtree text-[11px] uppercase tracking-[0.15em] transition-colors ${isAnonymous ? "text-ember" : "text-brand-50/45 hover:text-brand-50/70"}`}
+          >
+            {isAnonymous ? "Anonymous" : "Reply as you"}
+          </button>
         </div>
         <button
           type="submit"
           disabled={!body.trim() || submitting}
-          className="self-start rounded-full bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="self-start rounded-full bg-gradient-to-b from-[#F5D28B] via-ember to-[#C99845] px-4 py-2.5 font-figtree text-sm font-semibold text-brand-900 transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {submitting ? "..." : "Reply"}
+          {submitting ? "…" : "Send"}
         </button>
       </form>
 
       {error && (
-        <p className="mt-2 text-xs text-red-600">{error}</p>
+        <p className="mt-2 font-figtree text-xs text-red-300">{error}</p>
       )}
     </div>
   );

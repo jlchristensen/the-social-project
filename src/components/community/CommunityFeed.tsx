@@ -37,43 +37,46 @@ export default function CommunityFeed({
   const sortedOthers = sortAnswers(otherAnswers, sortMode);
 
   const tabs: { key: SortMode; label: string }[] = [
-    { key: "top", label: "Top" },
-    { key: "new", label: "New" },
-    { key: "discussed", label: "Discussed" },
+    { key: "top", label: "Most resonant" },
+    { key: "new", label: "Latest" },
+    { key: "discussed", label: "Most discussed" },
   ];
 
   return (
     <div>
-      {/* Sort tabs */}
-      <div className="flex items-center gap-1 rounded-full bg-slate-100 p-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setSortMode(tab.key)}
-            className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition-all ${
-              sortMode === tab.key
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Welcome + sort controls */}
+      <div className="mb-8 text-center">
+        <p className="font-serif text-2xl italic text-ember md:text-3xl">
+          You&apos;re in. Pull up a log.
+        </p>
+        <div className="mt-6 inline-flex gap-1 rounded-full border border-brand-50/10 bg-white/[0.04] p-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setSortMode(tab.key)}
+              className={`rounded-full px-4 py-2 font-figtree text-[11px] font-medium uppercase tracking-[0.18em] transition-all ${
+                sortMode === tab.key
+                  ? "bg-ember text-brand-900"
+                  : "text-brand-50/60 hover:text-brand-50"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Answer list */}
-      <div className="mt-6 space-y-4">
-        {ownAnswer && <AnswerCard answer={ownAnswer} isOwn />}
-        {sortedOthers.map((answer) => (
-          <AnswerCard key={answer.id} answer={answer} isOwn={false} />
-        ))}
-      </div>
-
-      {answers.length === 0 && (
-        <div className="mt-8 text-center">
-          <p className="text-sm text-slate-400">
-            No answers yet. Be the first to share your thoughts.
-          </p>
+      {/* Masonry of cards (CSS columns) */}
+      {answers.length === 0 ? (
+        <p className="mt-8 text-center font-figtree text-sm text-brand-50/50">
+          No one has spoken yet. You&apos;re the first voice tonight.
+        </p>
+      ) : (
+        <div className="columns-1 gap-5 md:columns-2">
+          {ownAnswer && <AnswerCard answer={ownAnswer} isOwn />}
+          {sortedOthers.map((answer) => (
+            <AnswerCard key={answer.id} answer={answer} isOwn={false} />
+          ))}
         </div>
       )}
     </div>

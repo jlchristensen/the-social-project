@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif, Figtree } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/layout/Header";
@@ -18,6 +18,20 @@ const geistMono = Geist_Mono({
 const tanNimbus = localFont({
   src: "../fonts/TAN-NIMBUS.otf",
   variable: "--font-display",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const figtree = Figtree({
+  variable: "--font-figtree",
+  subsets: ["latin"],
   display: "swap",
 });
 
@@ -59,7 +73,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${tanNimbus.variable} scroll-smooth`}
+      className={`${geistSans.variable} ${geistMono.variable} ${tanNimbus.variable} ${instrumentSerif.variable} ${figtree.variable} scroll-smooth`}
     >
       <body className="min-h-screen flex flex-col antialiased">
         <Header />

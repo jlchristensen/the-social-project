@@ -23,70 +23,46 @@ export default function AnswerGate({
   const [error, setError] = useState<string | null>(null);
   const [celebrating, setCelebrating] = useState(false);
 
+  // When already answered (server-rendered), we render nothing here —
+  // the feed below takes over.
   if (hasAnswered) return null;
 
+  // ── Signed-out: a simple CTA pair, no second panel ────────────────────
   if (!isSignedIn) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50">
-          <svg
-            className="h-6 w-6 text-brand-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
-            />
-          </svg>
-        </div>
-        <p className="mt-4 text-base font-medium text-slate-900">
-          Share your voice
-        </p>
-        <p className="mt-2 text-sm text-slate-500">
-          Sign in to answer today&apos;s question and see what others think.
-        </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/sign-in"
-          className="mt-6 inline-block rounded-full bg-brand-600 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
+          className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#F5D28B] via-ember to-[#C99845] px-6 py-3.5 text-sm font-semibold text-brand-900 shadow-[0_0_0_1px_rgba(255,255,255,0.12)_inset,0_10px_30px_-5px_rgba(232,184,106,0.35),0_0_40px_-10px_rgba(232,184,106,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(255,255,255,0.22)_inset,0_14px_40px_-5px_rgba(232,184,106,0.5),0_0_60px_-8px_rgba(232,184,106,0.7)]"
         >
+          <span className="h-2 w-2 rounded-full bg-[#F5D28B] shadow-[0_0_10px_#F5D28B]" />
           Sign in to answer
+        </Link>
+        <Link
+          href="/sign-up"
+          className="inline-flex items-center gap-2 rounded-full border border-brand-50/20 px-6 py-3.5 text-sm font-medium text-brand-50 transition-colors hover:border-ember hover:text-ember"
+        >
+          Create an account
         </Link>
       </div>
     );
   }
 
+  // ── Celebrating: a brief transition line after submit ────────────────
   if (celebrating) {
     return (
-      <div className="rounded-2xl border border-brand-200 bg-brand-50 p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-100">
-          <svg
-            className="h-7 w-7 text-brand-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m4.5 12.75 6 6 9-13.5"
-            />
-          </svg>
-        </div>
-        <p className="mt-4 text-lg font-semibold text-brand-900">
-          Your voice has been added
+      <div className="text-center">
+        <p className="font-serif text-2xl italic text-ember">
+          You&apos;re in. Pull up a log.
         </p>
-        <p className="mt-2 text-sm text-brand-700/70">
-          Here&apos;s what everyone else thinks...
+        <p className="mt-2 font-figtree text-sm text-brand-50/60">
+          Opening the circle…
         </p>
       </div>
     );
   }
 
+  // ── Signed-in, answering: the candle-lit textarea ────────────────────
   const charCount = body.length;
   const isValid = charCount >= 20;
 
@@ -129,13 +105,13 @@ export default function AnswerGate({
     setCelebrating(true);
     setTimeout(() => {
       router.refresh();
-    }, 1800);
+    }, 1600);
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-slate-200 bg-white p-6"
+      className="relative rounded-[20px] border border-ember/25 bg-[radial-gradient(400px_200px_at_50%_-20%,rgba(232,184,106,0.18),transparent_70%),linear-gradient(180deg,rgba(232,184,106,0.03),rgba(232,184,106,0.01))] p-7 shadow-[inset_0_0_40px_rgba(232,184,106,0.06),0_20px_60px_-30px_rgba(232,184,106,0.22)]"
     >
       <label htmlFor="answer-body" className="sr-only">
         Your answer
@@ -144,54 +120,51 @@ export default function AnswerGate({
         id="answer-body"
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder="Share your answer..."
-        rows={4}
+        placeholder="Share your answer…"
+        rows={5}
         maxLength={2000}
-        className="w-full resize-none rounded-xl border-0 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+        className="w-full resize-none bg-transparent font-serif text-xl leading-relaxed text-brand-50 placeholder:italic placeholder:text-brand-50/40 focus:outline-none md:text-[22px]"
       />
 
-      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isAnonymous}
-            onClick={() => setIsAnonymous(!isAnonymous)}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${isAnonymous ? "bg-brand-600" : "bg-slate-200"}`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition-transform ${isAnonymous ? "translate-x-5" : "translate-x-0"}`}
-            />
-          </button>
-          <span className="text-sm text-slate-500">
-            {isAnonymous ? "Posting anonymously" : "Posting as you"}
-          </span>
-        </div>
+      <div className="mt-4 flex flex-col gap-4 border-t border-dashed border-ember/20 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <label className="flex cursor-pointer items-center gap-3 font-figtree text-sm text-brand-50/75">
+          <input
+            type="checkbox"
+            checked={isAnonymous}
+            onChange={(e) => setIsAnonymous(e.target.checked)}
+            className="h-4 w-4 accent-ember"
+          />
+          Speak anonymously
+        </label>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <span
-            className={`text-xs ${charCount >= 20 ? "text-slate-400" : "text-slate-300"}`}
+            className={`font-figtree text-xs transition-colors ${charCount >= 20 ? "text-brand-50/60" : "text-brand-50/35"}`}
           >
-            {charCount}/2000
+            <span className={charCount >= 20 ? "text-ember" : ""}>
+              {charCount}
+            </span>{" "}
+            / 800
           </span>
           <button
             type="submit"
             disabled={!isValid || loading}
-            className="rounded-full bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#F5D28B] via-ember to-[#C99845] px-6 py-3 font-figtree text-sm font-semibold text-brand-900 shadow-[0_0_0_1px_rgba(255,255,255,0.12)_inset,0_10px_30px_-5px_rgba(232,184,106,0.35),0_0_40px_-10px_rgba(232,184,106,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(255,255,255,0.22)_inset,0_14px_40px_-5px_rgba(232,184,106,0.5),0_0_60px_-8px_rgba(232,184,106,0.7)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {loading ? "Sharing..." : "Share answer"}
+            <span className="h-2 w-2 rounded-full bg-[#F5D28B] shadow-[0_0_10px_#F5D28B]" />
+            {loading ? "Sending…" : "Send sparks"}
           </button>
         </div>
       </div>
 
       {!isValid && charCount > 0 && (
-        <p className="mt-3 text-xs text-slate-400">
+        <p className="mt-3 font-figtree text-xs text-brand-50/50">
           {20 - charCount} more characters needed
         </p>
       )}
 
       {error && (
-        <div className="mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 font-figtree text-sm text-red-300">
           {error}
         </div>
       )}
