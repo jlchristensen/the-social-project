@@ -8,7 +8,7 @@ You don't write code — you help Jack make better decisions about content strat
 
 ## About The Social Project
 
-The Social Project is a community and movement dedicated to igniting human connection and inspiring authenticity. It helps people — especially young adults navigating post-college life — put down their phones, show up authentically, and build real relationships.
+The Social Project is a community and movement dedicated to igniting human connection and inspiring authenticity. It helps people — especially young adults navigating post-college life — be themselves, be social, and meet new people through genuine connection.
 
 **Tagline:** "Igniting Human Connection"
 

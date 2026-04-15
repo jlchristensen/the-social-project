@@ -51,9 +51,7 @@ export default function HeroSection() {
           <div className="mt-10 flex max-w-2xl items-start gap-4">
             <span className="mt-2 hidden h-px w-10 flex-shrink-0 bg-white/40 sm:block" />
             <p className="text-center text-base leading-relaxed text-white/80 sm:text-left md:text-lg">
-              We&apos;re on a mission to help people put down their phones, show
-              up authentically, and build the real relationships that make life
-              meaningful.{" "}
+              Be yourself. Be social. Meet someone new.{" "}
               <span className="font-medium text-white">
                 Welcome to The Social Project.
               </span>
