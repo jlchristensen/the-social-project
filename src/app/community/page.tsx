@@ -150,11 +150,6 @@ export default async function CommunityPage() {
     );
   }
 
-  const dateLabel = new Date(`${question.active_date}T00:00:00`).toLocaleDateString(
-    "en-US",
-    { weekday: "long", day: "numeric", month: "long" }
-  );
-
   return (
     <div
       className="relative min-h-screen text-brand-50"
@@ -166,33 +161,6 @@ export default async function CommunityPage() {
         <Embers />
       </div>
 
-      {/* ── Sticky sub-bar: a small breath of fire under the global header.
-            Always present so the fire feels close, on every screen size. ── */}
-      <div className="sticky top-[64px] z-30 border-y border-ember/10 bg-[rgba(4,15,9,0.55)] backdrop-blur-xl backdrop-saturate-150 md:top-[68px]">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-5 py-3 md:px-6">
-          <span
-            className="flame-pulse h-5 w-5 flex-none rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at 50% 60%, #F5D28B, #E8B86A 40%, transparent 70%)",
-              boxShadow: "0 0 22px rgba(245,210,139,0.55)",
-            }}
-            aria-hidden="true"
-          />
-          <span className="font-figtree text-[10px] font-medium uppercase tracking-[0.32em] text-ember md:text-[11px]">
-            <span className="md:hidden">The Campfire</span>
-            <span className="hidden md:inline">The Campfire · {dateLabel}</span>
-          </span>
-          <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-brand-300/30 bg-brand-300/10 px-2.5 py-1 font-figtree text-[10px] text-brand-100 md:text-[11px]">
-            <span
-              className="flame-pulse h-1.5 w-1.5 rounded-full bg-brand-300"
-              style={{ boxShadow: "0 0 10px #5fad80" }}
-            />
-            {answerCount} {answerCount === 1 ? "voice" : "voices"}
-          </span>
-        </div>
-      </div>
-
       {/* ── The Hero: the question, lit by the fire ── */}
       <section className="relative">
         {/* Aura behind the question */}
@@ -201,7 +169,7 @@ export default async function CommunityPage() {
           style={{ top: "55%", width: 720, height: 720 }}
         />
 
-        <div className="relative mx-auto max-w-2xl px-5 pt-16 pb-10 text-center md:max-w-3xl md:px-8 md:pt-24 md:pb-14">
+        <div className="relative mx-auto max-w-2xl px-5 pt-24 pb-10 text-center md:max-w-3xl md:px-8 md:pt-28 md:pb-14">
           <DailyQuestion
             question={question}
             answerCount={answerCount}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -16,6 +16,9 @@ export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  /** On /community only: hide chrome while scrolling down for a more immersive campfire. */
+  const [campfireImmersiveHidden, setCampfireImmersiveHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   // Routes without a dark PageHeader behind the fixed header need the
   // header to render in its solid dark state immediately, otherwise the
@@ -26,11 +29,42 @@ export default function Header() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    lastScrollY.current =
+      typeof window !== "undefined" ? window.scrollY : 0;
+    setCampfireImmersiveHidden(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 60);
+
+      const onCampfire = pathname === "/community";
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (!onCampfire || reduceMotion || mobileOpen) {
+        setCampfireImmersiveHidden(false);
+        lastScrollY.current = y;
+        return;
+      }
+
+      const delta = y - lastScrollY.current;
+      lastScrollY.current = y;
+
+      if (y < 56) {
+        setCampfireImmersiveHidden(false);
+        return;
+      }
+      if (delta > 8) setCampfireImmersiveHidden(true);
+      else if (delta < -8) setCampfireImmersiveHidden(false);
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [pathname, mobileOpen]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -57,9 +91,20 @@ export default function Header() {
     router.refresh();
   }
 
+  const immersiveHide =
+    pathname === "/community" && campfireImmersiveHidden;
+
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-[background-color,backdrop-filter,border-color,padding,box-shadow] duration-700 ease-out ${
+      className={`fixed top-0 z-50 w-full ease-out will-change-transform ${
+        pathname === "/community"
+          ? "transition-[transform,background-color,backdrop-filter,border-color,padding,box-shadow] duration-300"
+          : "transition-[background-color,backdrop-filter,border-color,padding,box-shadow] duration-700"
+      } ${
+        immersiveHide
+          ? "pointer-events-none -translate-y-full"
+          : "translate-y-0"
+      } ${
         solid
           ? "border-b border-white/10 bg-brand-900/85 py-3 shadow-[0_8px_30px_-15px_rgba(0,32,15,0.6)] backdrop-blur-xl"
           : "border-b border-transparent bg-transparent py-5"
