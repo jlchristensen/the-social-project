@@ -152,10 +152,11 @@ The existing `ProfileActivityFeed` and `ProfileActivityMarker` components are re
 
 | Column | Type | Notes |
 |---|---|---|
-| `avatar_url` | `text` (nullable) | Public URL to uploaded image. Null = render fallback letter avatar. |
 | `vibe_color` | `text` | One of `ember` / `hearth` / `forest` / `dusk` / `clay`. NOT NULL. Default `'ember'`. CHECK constraint enforces the allowed values. |
 
-Existing columns (`display_name`, `bio`, `activity_last_viewed_at`, `updated_at`) are unchanged.
+`avatar_url` (text, nullable) already exists in the `profiles` table from migration `001-profiles-table.sql`. The redesign just starts using it.
+
+Other existing columns (`display_name`, `bio`, `activity_last_viewed_at`, `updated_at`) are unchanged.
 
 ### Supabase Storage
 
@@ -171,10 +172,10 @@ All three stat numbers are computed at request time inside the same server fetch
 
 ### Migration
 
-A new SQL file `docs/supabase/005-profile-vibe-and-avatar.sql` adds:
+A new SQL file `docs/supabase/005-profile-vibe-and-avatars-bucket.sql` adds:
 
-- The two columns to `profiles` with the CHECK constraint and defaults
-- The `avatars` bucket creation + RLS policies
+- The `vibe_color` column on `profiles` with CHECK constraint and default
+- The `avatars` storage bucket + RLS policies
 - A backfill setting `vibe_color = 'ember'` for any pre-existing rows
 
 ## 10. Files affected
