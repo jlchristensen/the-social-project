@@ -45,6 +45,10 @@ create policy "Avatars: owner can update"
   using (
     bucket_id = 'avatars'
     and (storage.foldername(name))[1] = auth.uid()::text
+  )
+  with check (
+    bucket_id = 'avatars'
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
 
 drop policy if exists "Avatars: owner can delete" on storage.objects;
