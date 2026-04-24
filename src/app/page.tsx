@@ -9,8 +9,8 @@ export default function Home() {
     <>
       <HeroSection />
       <StatsSection />
-      <MissionSection />
       <CampfireSection />
+      <MissionSection />
       {/* <CTASection /> */}
     </>
   );
