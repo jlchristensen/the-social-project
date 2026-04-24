@@ -20,11 +20,7 @@ export default function Header() {
   const [campfireImmersiveHidden, setCampfireImmersiveHidden] = useState(false);
   const lastScrollY = useRef(0);
 
-  // Routes without a dark PageHeader behind the fixed header need the
-  // header to render in its solid dark state immediately, otherwise the
-  // white logo/nav disappears against the light page background.
-  const forceSolid = pathname === "/community";
-  const solid = scrolled || forceSolid;
+  const solid = scrolled;
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
