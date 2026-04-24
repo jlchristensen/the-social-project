@@ -4,12 +4,22 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import {
+  PROFILE_ACTIVITY_SEEN_EVENT,
+  fetchHasUnreadProfileActivity,
+} from "@/lib/profileActivityUnread";
 import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
   { href: "/community", label: "The Campfire" },
   { href: "/merch", label: "The Gift Shop" },
 ];
+
+/** Local design preview only — ignored in production builds. */
+const previewProfileNotificationDot =
+  process.env.NODE_ENV === "development" &&
+  (process.env.NEXT_PUBLIC_PREVIEW_PROFILE_NOTIFICATION === "true" ||
+    process.env.NEXT_PUBLIC_PREVIEW_PROFILE_NOTIFICATION === "1");
 
 export default function Header() {
   const router = useRouter();
@@ -23,6 +33,8 @@ export default function Header() {
   const solid = scrolled;
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasUnreadProfileActivity, setHasUnreadProfileActivity] =
+    useState(false);
 
   useEffect(() => {
     lastScrollY.current =
@@ -92,6 +104,45 @@ export default function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refreshUnread() {
+      if (!user?.id) {
+        setHasUnreadProfileActivity(false);
+        return;
+      }
+      const has = await fetchHasUnreadProfileActivity(user.id);
+      if (!cancelled) setHasUnreadProfileActivity(has);
+    }
+
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      await refreshUnread();
+    })();
+
+    function onActivitySeen() {
+      void refreshUnread();
+    }
+
+    function onVisible() {
+      if (document.visibilityState === "visible") void refreshUnread();
+    }
+
+    window.addEventListener(PROFILE_ACTIVITY_SEEN_EVENT, onActivitySeen);
+    document.addEventListener("visibilitychange", onVisible);
+
+    const interval = window.setInterval(() => void refreshUnread(), 60_000);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener(PROFILE_ACTIVITY_SEEN_EVENT, onActivitySeen);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.clearInterval(interval);
+    };
+  }, [user?.id, pathname]);
+
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -102,6 +153,9 @@ export default function Header() {
 
   const immersiveHide =
     pathname === "/community" && campfireImmersiveHidden;
+
+  const showUnreadProfileDot =
+    previewProfileNotificationDot || hasUnreadProfileActivity;
 
   return (
     <header
@@ -148,10 +202,21 @@ export default function Header() {
                 <div className="ml-3 flex items-center gap-2">
                   <Link
                     href="/profile"
+                    aria-label={
+                      showUnreadProfileDot
+                        ? "Profile — unread activity"
+                        : "Profile"
+                    }
                     className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.12em] text-white transition-all duration-300 hover:bg-white/20"
                   >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-300 text-[10px] font-bold text-brand-900">
+                    <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-300 text-[10px] font-bold text-brand-900">
                       {(user.email?.[0] ?? "?").toUpperCase()}
+                      {showUnreadProfileDot && (
+                        <span
+                          className="pointer-events-none absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ember shadow-[0_0_6px_2px_rgba(245,210,139,0.95),0_0_14px_5px_rgba(232,184,106,0.55)] ring-[1.5px] ring-brand-900"
+                          aria-hidden
+                        />
+                      )}
                     </span>
                     Profile
                   </Link>
@@ -227,9 +292,15 @@ export default function Header() {
                     <Link
                       href="/profile"
                       onClick={() => setMobileOpen(false)}
-                      className="rounded-xl px-3 py-3 text-base font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-white"
+                      className="flex items-center justify-between gap-3 rounded-xl px-3 py-3 text-base font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-white"
                     >
-                      Profile
+                      <span>Profile</span>
+                      {showUnreadProfileDot && (
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full bg-ember shadow-[0_0_8px_3px_rgba(245,210,139,0.9),0_0_14px_5px_rgba(232,184,106,0.45)]"
+                          aria-hidden
+                        />
+                      )}
                     </Link>
                     <button
                       onClick={() => {

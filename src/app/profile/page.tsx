@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ProfileForm from "./ProfileForm";
+import ProfileActivityMarker from "./ProfileActivityMarker";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -44,6 +45,7 @@ export default async function ProfilePage() {
           </p>
         </div>
 
+        <ProfileActivityMarker />
         <ProfileForm
           initialDisplayName={profile?.display_name ?? ""}
           initialBio={profile?.bio ?? ""}

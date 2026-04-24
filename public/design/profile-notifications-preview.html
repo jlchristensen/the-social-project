@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Preview — Profile + Activity (The Social Project)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #06160d;
+      --bg2: #08180e;
+      --brand-50: #eef6f1;
+      --brand-100: #d0e8d9;
+      --brand-300: #5fad80;
+      --brand-900: #00200f;
+      --ember: #e8b86a;
+      --ember-hot: #f5d28b;
+      --display: "Instrument Serif", Georgia, serif;
+      --ui: "Figtree", system-ui, sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+    body {
+      font-family: var(--ui);
+      color: var(--brand-50);
+      background:
+        radial-gradient(70% 40% at 50% 0%, rgba(232, 184, 106, 0.06), transparent 60%),
+        linear-gradient(180deg, var(--bg2) 0%, var(--bg) 30%, #04130a 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      padding: 120px 24px 64px;
+    }
+    .wrap {
+      width: 100%;
+      max-width: 32rem;
+      margin: 0 auto;
+    }
+    .banner {
+      margin-bottom: 1rem;
+      padding: 0.65rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px dashed rgba(232, 184, 106, 0.35);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(238, 246, 241, 0.65);
+    }
+    .banner strong {
+      color: var(--ember);
+      font-weight: 600;
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: 2.25rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+      color: var(--brand-50);
+    }
+    .lede {
+      font-size: 1.125rem;
+      line-height: 1.5;
+      color: rgba(238, 246, 241, 0.6);
+      margin: 0 0 2.5rem;
+    }
+    .card {
+      border-radius: 0.75rem;
+      border: 1px solid rgba(238, 246, 241, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .card p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: rgba(238, 246, 241, 0.65);
+    }
+    .card p + p {
+      margin-top: 0.35rem;
+    }
+    .card .k {
+      font-weight: 500;
+      color: var(--brand-100);
+    }
+
+    /* Activity — proposed new block */
+    .activity {
+      margin-bottom: 2rem;
+    }
+    .activity-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .activity-title {
+      font-family: var(--display);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--brand-50);
+      margin: 0;
+    }
+    .activity-meta {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(238, 246, 241, 0.45);
+      white-space: nowrap;
+    }
+    .activity-meta em {
+      font-style: normal;
+      color: var(--ember);
+    }
+    .notif-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    a.notif {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(238, 246, 241, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 1rem 1.1rem;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+    }
+    a.notif:hover {
+      border-color: rgba(232, 184, 106, 0.35);
+      box-shadow: 0 12px 40px -24px rgba(232, 184, 106, 0.35);
+      transform: translateY(-1px);
+    }
+    a.notif.unread {
+      border-color: rgba(232, 184, 106, 0.28);
+      background:
+        radial-gradient(500px 120px at 10% -40%, rgba(232, 184, 106, 0.07), transparent 55%),
+        rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 0 40px rgba(232, 184, 106, 0.04);
+    }
+    .notif-top {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ember);
+      box-shadow: 0 0 12px rgba(232, 184, 106, 0.6);
+      flex-shrink: 0;
+    }
+    a.notif.read .dot {
+      opacity: 0;
+      width: 0;
+      margin: 0;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ember);
+      border: 1px solid rgba(232, 184, 106, 0.35);
+      border-radius: 999px;
+      padding: 0.2rem 0.5rem;
+    }
+    .badge.reply {
+      color: rgba(238, 246, 241, 0.75);
+      border-color: rgba(238, 246, 241, 0.2);
+    }
+    .notif-line {
+      font-family: var(--display);
+      font-size: 1.05rem;
+      line-height: 1.35;
+      color: rgba(238, 246, 241, 0.95);
+      margin: 0 0 0.35rem;
+    }
+    .notif-snippet {
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      color: rgba(238, 246, 241, 0.55);
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .notif-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.65rem;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(238, 246, 241, 0.4);
+    }
+    .notif-foot span.go {
+      color: var(--ember);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+    }
+    .form-block {
+      border-top: 1px dashed rgba(232, 184, 106, 0.2);
+      padding-top: 1.5rem;
+    }
+    .ph-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--brand-100);
+      margin-bottom: 0.35rem;
+    }
+    .ph-input {
+      width: 100%;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(238, 246, 241, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.75rem 1rem;
+      color: rgba(238, 246, 241, 0.35);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="banner">
+      <strong>Design preview only</strong> — static HTML. Open this file in your browser from the repo:
+      <code style="color: rgba(238,246,241,0.85)">public/design/profile-notifications-preview.html</code>
+    </p>
+
+    <h1>Your profile</h1>
+    <p class="lede">This is how other community members will see you.</p>
+
+    <div class="card">
+      <p><span class="k">Email:</span> you@example.com</p>
+      <p><span class="k">Member since:</span> April 2026</p>
+    </div>
+
+    <section class="activity" aria-labelledby="activity-heading">
+      <div class="activity-head">
+        <h2 id="activity-heading" class="activity-title">Activity</h2>
+        <p class="activity-meta"><em>3</em> unread · In-app only</p>
+      </div>
+      <div class="notif-list">
+        <!-- Reply: immediate, unread -->
+        <a class="notif unread" href="#">
+          <div class="notif-top">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="badge reply">Reply</span>
+          </div>
+          <p class="notif-line">Maya replied to your post</p>
+          <p class="notif-snippet">“This landed — especially the part about showing up when it’s uncomfortable.”</p>
+          <div class="notif-foot">
+            <span>Just now</span>
+            <span class="go">View →</span>
+          </div>
+        </a>
+
+        <!-- Resonate: batched, still “open” until window closes — shown as one row -->
+        <a class="notif unread" href="#">
+          <div class="notif-top">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="badge">Resonate</span>
+          </div>
+          <p class="notif-line">12 people resonated with your post</p>
+          <p class="notif-snippet">
+            Counts update as more folks tap Resonate; we’ll show one line per day’s answer instead of a ping every time.
+          </p>
+          <div class="notif-foot">
+            <span>Batched · 4m ago</span>
+            <span class="go">Campfire →</span>
+          </div>
+        </a>
+
+        <!-- Read reply -->
+        <a class="notif read" href="#">
+          <div class="notif-top">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="badge reply">Reply</span>
+          </div>
+          <p class="notif-line">Alex replied to your post</p>
+          <p class="notif-snippet">“Same here — small steps still count.”</p>
+          <div class="notif-foot">
+            <span>Yesterday</span>
+            <span class="go">View →</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <div class="form-block">
+      <p class="ph-label">Display name</p>
+      <div class="ph-input">Your name (existing form continues below…)</div>
+      <p class="ph-label">Bio</p>
+      <div class="ph-input" style="min-height: 5rem">…</div>
+    </div>
+  </div>
+</body>
+</html>
