@@ -19,6 +19,111 @@ export type CampfireActivityItem =
       answer_excerpt: string;
     };
 
+/** One row per answer for resonates; replies stay one row each (Option B). */
+export type ProfileActivityDisplayRow =
+  | {
+      kind: "reply";
+      id: string;
+      created_at: string;
+      answer_id: string;
+      actor_label: string;
+      reply_snippet: string;
+      answer_excerpt: string;
+    }
+  | {
+      kind: "resonate_bundle";
+      answer_id: string;
+      count: number;
+      latest_at: string;
+      answer_excerpt: string;
+      /** Up to 3 distinct names, most recent resonate first */
+      sample_names: string[];
+    };
+
+function rowSortTime(row: ProfileActivityDisplayRow): string {
+  return row.kind === "reply" ? row.created_at : row.latest_at;
+}
+
+/**
+ * Bundles all resonates on the same answer into one row; leaves each reply as its own row.
+ */
+export function buildProfileActivityDisplayRows(
+  items: CampfireActivityItem[]
+): ProfileActivityDisplayRow[] {
+  const replies = items.filter(
+    (i): i is Extract<CampfireActivityItem, { kind: "reply" }> =>
+      i.kind === "reply"
+  );
+  const resonates = items.filter(
+    (i): i is Extract<CampfireActivityItem, { kind: "resonate" }> =>
+      i.kind === "resonate"
+  );
+
+  resonates.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  type Group = {
+    count: number;
+    latest_at: string;
+    excerpt: string;
+    sample_names: string[];
+    seen_label: Set<string>;
+  };
+
+  const byAnswer = new Map<string, Group>();
+
+  for (const r of resonates) {
+    let g = byAnswer.get(r.answer_id);
+    if (!g) {
+      g = {
+        count: 0,
+        latest_at: r.created_at,
+        excerpt: r.answer_excerpt,
+        sample_names: [],
+        seen_label: new Set(),
+      };
+      byAnswer.set(r.answer_id, g);
+    }
+    g.count += 1;
+    if (new Date(r.created_at).getTime() > new Date(g.latest_at).getTime()) {
+      g.latest_at = r.created_at;
+    }
+    if (!g.seen_label.has(r.actor_label) && g.sample_names.length < 3) {
+      g.seen_label.add(r.actor_label);
+      g.sample_names.push(r.actor_label);
+    }
+  }
+
+  const bundles: ProfileActivityDisplayRow[] = [];
+  for (const [answer_id, g] of byAnswer) {
+    bundles.push({
+      kind: "resonate_bundle",
+      answer_id,
+      count: g.count,
+      latest_at: g.latest_at,
+      answer_excerpt: g.excerpt,
+      sample_names: g.sample_names,
+    });
+  }
+
+  const replyRows: ProfileActivityDisplayRow[] = replies.map((r) => ({
+    kind: "reply" as const,
+    id: r.id,
+    created_at: r.created_at,
+    answer_id: r.answer_id,
+    actor_label: r.actor_label,
+    reply_snippet: r.reply_snippet,
+    answer_excerpt: r.answer_excerpt,
+  }));
+
+  return [...replyRows, ...bundles].sort(
+    (a, b) =>
+      new Date(rowSortTime(b)).getTime() - new Date(rowSortTime(a)).getTime()
+  );
+}
+
 function excerpt(body: string, max = 100): string {
   const t = body.trim().replace(/\s+/g, " ");
   if (t.length <= max) return t;
