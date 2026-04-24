@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 
@@ -6,10 +7,16 @@ export default function HeroSection() {
     <section className="relative isolate min-h-[100svh] overflow-hidden">
       {/* ───── Background image (Ken Burns) ───── */}
       <div className="absolute inset-0 -z-10">
-        <div
-          className="ken-burns absolute inset-[-7%] bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
-        />
+        <div className="ken-burns absolute inset-[-7%]">
+          <Image
+            src="/images/hero-bg.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
 
         {/* Green-multiply wash — keeps the photo visible while tinting it
             into the same evening-by-the-fire mood as the rest of the site. */}

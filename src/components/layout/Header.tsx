@@ -35,7 +35,11 @@ export default function Header() {
   }, [pathname]);
 
   useEffect(() => {
-    const onScroll = () => {
+    let rafId = 0;
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
       const y = window.scrollY;
       setScrolled(y > 60);
 
@@ -61,9 +65,18 @@ export default function Header() {
       else if (delta < -8) setCampfireImmersiveHidden(false);
     };
 
-    onScroll();
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      rafId = window.requestAnimationFrame(update);
+    };
+
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
   }, [pathname, mobileOpen]);
 
   useEffect(() => {

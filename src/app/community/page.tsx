@@ -24,39 +24,38 @@ export default async function CommunityPage() {
     timeZone: "America/Chicago",
   });
 
-  const { data: question } = await supabase
-    .from("daily_questions")
-    .select("*")
-    .eq("active_date", today)
-    .single();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [{ data: question }, { data: { user } }] = await Promise.all([
+    supabase
+      .from("daily_questions")
+      .select("*")
+      .eq("active_date", today)
+      .single(),
+    supabase.auth.getUser(),
+  ]);
 
   let answerCount = 0;
-  if (question) {
-    const { count } = await supabase
-      .from("answers")
-      .select("*", { count: "exact", head: true })
-      .eq("question_id", question.id);
-    answerCount = count ?? 0;
-  }
-
   let answers: Answer[] = [];
   let hasAnswered = false;
 
-  if (question && user) {
-    const { data: ownAnswer } = await supabase
-      .from("answers")
-      .select("id")
-      .eq("question_id", question.id)
-      .eq("user_id", user.id)
-      .maybeSingle();
+  if (question) {
+    const [{ count }, ownAnswerRes] = await Promise.all([
+      supabase
+        .from("answers")
+        .select("*", { count: "exact", head: true })
+        .eq("question_id", question.id),
+      user
+        ? supabase
+            .from("answers")
+            .select("id")
+            .eq("question_id", question.id)
+            .eq("user_id", user.id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
+    answerCount = count ?? 0;
+    hasAnswered = !!ownAnswerRes.data;
 
-    hasAnswered = !!ownAnswer;
-
-    if (hasAnswered) {
+    if (user && hasAnswered) {
       const { data: answersData } = await supabase
         .from("answers")
         .select("*")
@@ -65,25 +64,27 @@ export default async function CommunityPage() {
 
       if (answersData && answersData.length > 0) {
         const userIds = [...new Set(answersData.map((a) => a.user_id))];
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, display_name")
-          .in("id", userIds);
+        const answerIds = answersData.map((a) => a.id);
+
+        const [{ data: profiles }, { data: upvotes }, { data: replies }] =
+          await Promise.all([
+            supabase
+              .from("profiles")
+              .select("id, display_name")
+              .in("id", userIds),
+            supabase
+              .from("answer_upvotes")
+              .select("answer_id, user_id")
+              .in("answer_id", answerIds),
+            supabase
+              .from("answer_replies")
+              .select("answer_id")
+              .in("answer_id", answerIds),
+          ]);
 
         const profileMap = new Map(
           (profiles ?? []).map((p) => [p.id, p.display_name])
         );
-
-        const answerIds = answersData.map((a) => a.id);
-        const { data: upvotes } = await supabase
-          .from("answer_upvotes")
-          .select("answer_id, user_id")
-          .in("answer_id", answerIds);
-
-        const { data: replies } = await supabase
-          .from("answer_replies")
-          .select("answer_id")
-          .in("answer_id", answerIds);
 
         const upvotesByAnswer = new Map<string, string[]>();
         for (const u of upvotes ?? []) {
