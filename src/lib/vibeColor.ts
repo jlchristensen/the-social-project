@@ -18,7 +18,7 @@ export interface VibeColor {
 }
 
 export const VIBE_COLORS: Record<VibeColorKey, VibeColor> = {
-  ember:  { key: "ember",  name: "Ember",  hex: "#f5d28b", hexLight: "#f5d28b", hexDark: "#b07a31" },
+  ember:  { key: "ember",  name: "Ember",  hex: "#f5d28b", hexLight: "#fae3b0", hexDark: "#b07a31" },
   hearth: { key: "hearth", name: "Hearth", hex: "#cf8a5c", hexLight: "#e3a983", hexDark: "#8c4f2a" },
   forest: { key: "forest", name: "Forest", hex: "#7da38d", hexLight: "#a8c4b4", hexDark: "#3f6855" },
   dusk:   { key: "dusk",   name: "Dusk",   hex: "#b58fd8", hexLight: "#cdb1e6", hexDark: "#6e4d9b" },
