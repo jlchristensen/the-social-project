@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import ProfileActivityFeed from "@/components/profile/ProfileActivityFeed";
+import { fetchCampfireActivityForUser } from "@/lib/profileActivityFeed";
 import ProfileForm from "./ProfileForm";
 import ProfileActivityMarker from "./ProfileActivityMarker";
 
@@ -18,6 +20,8 @@ export default async function ProfilePage() {
     .select("*")
     .eq("id", user.id)
     .single();
+
+  const activityItems = await fetchCampfireActivityForUser(supabase, user.id);
 
   return (
     <div className="flex min-h-screen items-start justify-center px-6 py-32">
@@ -44,6 +48,8 @@ export default async function ProfilePage() {
             })}
           </p>
         </div>
+
+        <ProfileActivityFeed items={activityItems} />
 
         <ProfileActivityMarker />
         <ProfileForm
