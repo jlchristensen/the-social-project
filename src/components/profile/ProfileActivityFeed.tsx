@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useId, useState } from "react";
 import type { ProfileActivityDisplayRow } from "@/lib/profileActivityFeed";
+
+const INITIAL_VISIBLE = 3;
 
 function timeAgo(dateString: string): string {
   const now = Date.now();
@@ -33,11 +38,88 @@ function resonateIncludingLine(count: number, samples: string[]): string | null 
   return `Including ${list}, and ${rest} ${rest === 1 ? "other" : "others"}`;
 }
 
+function ActivityRow({ item }: { item: ProfileActivityDisplayRow }) {
+  const resonateSub =
+    item.kind === "resonate_bundle"
+      ? resonateIncludingLine(item.count, item.sample_names)
+      : null;
+
+  return (
+    <li>
+      <Link
+        href="/community"
+        className="block rounded-xl border border-brand-50/10 bg-white/[0.02] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-ember/30 hover:shadow-[0_12px_40px_-24px_rgba(232,184,106,0.3)]"
+      >
+        <div className="mb-1.5 flex flex-wrap items-center gap-2">
+          <span
+            className={`rounded-full border px-2 py-0.5 font-figtree text-[10px] font-semibold uppercase tracking-[0.16em] ${
+              item.kind === "reply"
+                ? "border-brand-50/20 text-brand-50/75"
+                : "border-ember/35 text-ember"
+            }`}
+          >
+            {item.kind === "reply" ? "Reply" : "Resonate"}
+          </span>
+          <span className="font-figtree text-[11px] uppercase tracking-[0.08em] text-brand-50/40">
+            {timeAgo(rowTime(item))}
+          </span>
+        </div>
+        <p className="font-serif text-[17px] leading-snug text-brand-50/95">
+          {item.kind === "reply" ? (
+            <>
+              <span className="italic text-ember">{item.actor_label}</span>{" "}
+              wrote back
+            </>
+          ) : item.count === 1 ? (
+            <>
+              <span className="italic text-ember">
+                {item.sample_names[0] ?? "Someone"}
+              </span>{" "}
+              resonated
+            </>
+          ) : (
+            <>
+              <span className="text-ember">{item.count}</span> people resonated
+            </>
+          )}
+        </p>
+        {item.kind === "reply" && (
+          <p className="mt-1 line-clamp-2 font-figtree text-[13px] leading-relaxed text-brand-50/55">
+            “{item.reply_snippet}”
+          </p>
+        )}
+        {resonateSub ? (
+          <p className="mt-1 font-figtree text-[13px] leading-relaxed text-brand-50/50">
+            {resonateSub}
+          </p>
+        ) : null}
+        {item.answer_excerpt ? (
+          <p className="mt-2 border-t border-brand-50/10 pt-2 font-figtree text-[11px] leading-relaxed text-brand-50/40">
+            <span className="uppercase tracking-[0.1em] text-brand-50/35">
+              Your post
+            </span>{" "}
+            <span className="text-brand-50/55">{item.answer_excerpt}</span>
+          </p>
+        ) : null}
+        <p className="mt-2 font-figtree text-[11px] font-semibold uppercase tracking-[0.12em] text-ember">
+          Campfire →
+        </p>
+      </Link>
+    </li>
+  );
+}
+
 interface ProfileActivityFeedProps {
   rows: ProfileActivityDisplayRow[];
 }
 
 export default function ProfileActivityFeed({ rows }: ProfileActivityFeedProps) {
+  const [expanded, setExpanded] = useState(false);
+  const listId = useId();
+  const hiddenCount = Math.max(0, rows.length - INITIAL_VISIBLE);
+  const visibleRows = expanded ? rows : rows.slice(0, INITIAL_VISIBLE);
+  const showToggle = rows.length > INITIAL_VISIBLE;
+
   return (
     <section className="mb-10" aria-labelledby="campfire-activity-heading">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -68,90 +150,35 @@ export default function ProfileActivityFeed({ rows }: ProfileActivityFeedProps) 
           </Link>
         </div>
       ) : (
-        <ul className="flex flex-col gap-2.5">
-          {rows.map((item) => {
-            const resonateSub =
-              item.kind === "resonate_bundle"
-                ? resonateIncludingLine(item.count, item.sample_names)
-                : null;
-
-            return (
-              <li
-                key={
-                  item.kind === "reply"
-                    ? `reply-${item.id}`
-                    : `resonate-${item.answer_id}`
-                }
+        <>
+          <ul id={listId} className="flex flex-col gap-2.5">
+            {visibleRows.map((item) => (
+              <ActivityRow key={rowKey(item)} item={item} />
+            ))}
+          </ul>
+          {showToggle ? (
+            <div className="mt-4 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setExpanded((e) => !e)}
+                aria-expanded={expanded}
+                aria-controls={listId}
+                className="rounded-full border border-brand-50/15 bg-white/[0.04] px-4 py-2 font-figtree text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-50/70 transition-colors hover:border-ember/35 hover:text-ember"
               >
-                <Link
-                  href="/community"
-                  className="block rounded-xl border border-brand-50/10 bg-white/[0.02] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-ember/30 hover:shadow-[0_12px_40px_-24px_rgba(232,184,106,0.3)]"
-                >
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                    <span
-                      className={`rounded-full border px-2 py-0.5 font-figtree text-[10px] font-semibold uppercase tracking-[0.16em] ${
-                        item.kind === "reply"
-                          ? "border-brand-50/20 text-brand-50/75"
-                          : "border-ember/35 text-ember"
-                      }`}
-                    >
-                      {item.kind === "reply" ? "Reply" : "Resonate"}
-                    </span>
-                    <span className="font-figtree text-[11px] uppercase tracking-[0.08em] text-brand-50/40">
-                      {timeAgo(rowTime(item))}
-                    </span>
-                  </div>
-                  <p className="font-serif text-[17px] leading-snug text-brand-50/95">
-                    {item.kind === "reply" ? (
-                      <>
-                        <span className="italic text-ember">
-                          {item.actor_label}
-                        </span>{" "}
-                        wrote back
-                      </>
-                    ) : item.count === 1 ? (
-                      <>
-                        <span className="italic text-ember">
-                          {item.sample_names[0] ?? "Someone"}
-                        </span>{" "}
-                        resonated
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-ember">{item.count}</span> people
-                        resonated
-                      </>
-                    )}
-                  </p>
-                  {item.kind === "reply" && (
-                    <p className="mt-1 line-clamp-2 font-figtree text-[13px] leading-relaxed text-brand-50/55">
-                      “{item.reply_snippet}”
-                    </p>
-                  )}
-                  {resonateSub ? (
-                    <p className="mt-1 font-figtree text-[13px] leading-relaxed text-brand-50/50">
-                      {resonateSub}
-                    </p>
-                  ) : null}
-                  {item.answer_excerpt ? (
-                    <p className="mt-2 border-t border-brand-50/10 pt-2 font-figtree text-[11px] leading-relaxed text-brand-50/40">
-                      <span className="uppercase tracking-[0.1em] text-brand-50/35">
-                        Your post
-                      </span>{" "}
-                      <span className="text-brand-50/55">
-                        {item.answer_excerpt}
-                      </span>
-                    </p>
-                  ) : null}
-                  <p className="mt-2 font-figtree text-[11px] font-semibold uppercase tracking-[0.12em] text-ember">
-                    Campfire →
-                  </p>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                {expanded
+                  ? "Show less"
+                  : `Show ${hiddenCount} more`}
+              </button>
+            </div>
+          ) : null}
+        </>
       )}
     </section>
   );
+}
+
+function rowKey(item: ProfileActivityDisplayRow): string {
+  return item.kind === "reply"
+    ? `reply-${item.id}`
+    : `resonate-${item.answer_id}`;
 }
