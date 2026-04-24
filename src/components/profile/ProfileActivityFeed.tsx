@@ -114,12 +114,12 @@ export default function ProfileActivityFeed({ rows }: ProfileActivityFeedProps) 
                         <span className="italic text-ember">
                           {item.sample_names[0] ?? "Someone"}
                         </span>{" "}
-                        resonated with your post
+                        resonated
                       </>
                     ) : (
                       <>
                         <span className="text-ember">{item.count}</span> people
-                        resonated with your post
+                        resonated
                       </>
                     )}
                   </p>
