@@ -6,14 +6,13 @@ const footerLinks = {
     { href: "/merch", label: "The Gift Shop" },
   ],
   Company: [
-    { href: "#", label: "Contact" },
+    { href: "mailto:jackatlancer@gmail.com", label: "Contact" },
     { href: "#", label: "Privacy Policy" },
     { href: "#", label: "Terms" },
   ],
   Connect: [
-    { href: "#", label: "Instagram" },
-    { href: "#", label: "TikTok" },
-    { href: "#", label: "Twitter / X" },
+    { href: "https://instagram.com/thesocialproject_official", label: "Instagram" },
+    { href: "https://tiktok.com/@jointhesocialproject", label: "TikTok" },
     // { href: "#", label: "Newsletter" }, // hidden with the rest of the newsletter — restore here
   ],
 };
@@ -53,17 +52,31 @@ export default function Footer() {
                   {heading}
                 </h3>
                 <ul className="mt-6 space-y-3">
-                  {links.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className="group inline-flex items-center gap-2 text-sm text-brand-50/70 transition-colors duration-300 hover:text-brand-200"
-                      >
-                        <span className="link-rule" />
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
+                  {links.map((link) => {
+                    const isExternal = link.href.startsWith("http");
+                    const className =
+                      "group inline-flex items-center gap-2 text-sm text-brand-50/70 transition-colors duration-300 hover:text-brand-200";
+                    return (
+                      <li key={link.label}>
+                        {isExternal ? (
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={className}
+                          >
+                            <span className="link-rule" />
+                            {link.label}
+                          </a>
+                        ) : (
+                          <Link href={link.href} className={className}>
+                            <span className="link-rule" />
+                            {link.label}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
