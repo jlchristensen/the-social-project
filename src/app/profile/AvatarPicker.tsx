@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -24,6 +24,20 @@ export default function AvatarPicker({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, []);
+
+  function flashError(message: string) {
+    setError(message);
+    if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    errorTimeoutRef.current = setTimeout(() => setError(null), 5000);
+  }
 
   function openPicker() {
     if (uploading) return;
@@ -32,20 +46,21 @@ export default function AvatarPicker({
 
   async function onFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    e.target.value = ""; // allow re-selecting the same file later
+    e.target.value = "";
     if (!file) return;
 
     setError(null);
 
     if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+      flashError("Please choose an image file.");
       return;
     }
     if (file.size > MAX_BYTES) {
-      setError("Image must be under 2 MB.");
+      flashError("Image must be under 2 MB.");
       return;
     }
 
+    const myRequest = ++requestIdRef.current;
     setUploading(true);
 
     const supabase = createClient();
@@ -53,8 +68,10 @@ export default function AvatarPicker({
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      setUploading(false);
-      setError("You must be signed in.");
+      if (myRequest === requestIdRef.current) {
+        setUploading(false);
+        flashError("You must be signed in.");
+      }
       return;
     }
 
@@ -68,9 +85,11 @@ export default function AvatarPicker({
         upsert: false,
       });
 
+    if (myRequest !== requestIdRef.current) return;
+
     if (uploadError) {
       setUploading(false);
-      setError(uploadError.message);
+      flashError(uploadError.message);
       return;
     }
 
@@ -86,10 +105,12 @@ export default function AvatarPicker({
       })
       .eq("id", user.id);
 
+    if (myRequest !== requestIdRef.current) return;
+
     setUploading(false);
 
     if (updateError) {
-      setError(updateError.message);
+      flashError(updateError.message);
       return;
     }
 
@@ -101,6 +122,7 @@ export default function AvatarPicker({
     initialDisplayName.trim().charAt(0).toUpperCase() || "?";
   const ringStyle = { boxShadow: `0 0 0 3px ${vibe.hex}` };
   const fallbackGradient = `linear-gradient(135deg, ${vibe.hexLight}, ${vibe.hexDark})`;
+  const altText = `${initialDisplayName.trim() || "Your"} avatar`;
 
   return (
     <div className="flex flex-col">
@@ -109,14 +131,17 @@ export default function AvatarPicker({
         onClick={openPicker}
         disabled={uploading}
         aria-label="Change avatar"
-        className="relative h-[76px] w-[76px] flex-shrink-0 overflow-visible rounded-full transition-transform hover:-translate-y-px focus:outline-none disabled:cursor-wait"
+        className="relative h-[76px] w-[76px] flex-shrink-0 overflow-visible rounded-full transition-transform hover:-translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-ember/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06160d] disabled:cursor-wait"
         style={ringStyle}
       >
         <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
           {avatarUrl ? (
+            // `unoptimized` keeps avatars off Next's image optimizer so we don't
+            // need to whitelist the Supabase storage host in next.config.ts.
+            // Acceptable here because the rendered size is fixed at 76px.
             <Image
               src={avatarUrl}
-              alt=""
+              alt={altText}
               width={76}
               height={76}
               className="h-full w-full object-cover"
