@@ -1087,10 +1087,9 @@ git push
 
 - [ ] **Step 1: Create the hero**
 
-Composes `AvatarPicker`, the inline name field, the member-since line, the inline bio field, and the `VibeColorPicker`. This is the only place that arranges these client components together. It's itself a client component because it co-locates them — the page passes server-fetched values down.
+Composes `AvatarPicker`, the inline name field, the member-since line, the inline bio field, and the `VibeColorPicker`. This is the only place that arranges these client components together. It is a server component (no state of its own); each interactive child carries its own client boundary.
 
 ```tsx
-"use client";
 
 import AvatarPicker from "./AvatarPicker";
 import InlineTextField from "./InlineTextField";

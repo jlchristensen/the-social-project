@@ -1,5 +1,3 @@
-"use client";
-
 import AvatarPicker from "./AvatarPicker";
 import InlineTextField from "./InlineTextField";
 import VibeColorPicker from "./VibeColorPicker";
