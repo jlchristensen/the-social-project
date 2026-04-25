@@ -5,7 +5,15 @@ import {
   buildProfileActivityDisplayRows,
   fetchCampfireActivityForUser,
 } from "@/lib/profileActivityFeed";
-import ProfileForm from "./ProfileForm";
+import { fetchProfileStatsForUser } from "@/lib/profileStats";
+import {
+  DEFAULT_VIBE_COLOR,
+  isVibeColorKey,
+  resolveVibeColor,
+  type VibeColorKey,
+} from "@/lib/vibeColor";
+import ProfileHero from "./ProfileHero";
+import ProfileStatsRow from "./ProfileStats";
 import ProfileActivityMarker from "./ProfileActivityMarker";
 
 export default async function ProfilePage() {
@@ -18,48 +26,42 @@ export default async function ProfilePage() {
     redirect("/sign-in");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  const [profileRes, activityItems, stats] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).single(),
+    fetchCampfireActivityForUser(supabase, user.id),
+    fetchProfileStatsForUser(supabase, user.id),
+  ]);
 
-  const activityItems = await fetchCampfireActivityForUser(supabase, user.id);
+  const profile = profileRes.data;
   const activityRows = buildProfileActivityDisplayRows(activityItems);
+
+  const vibeKey: VibeColorKey = isVibeColorKey(profile?.vibe_color)
+    ? profile.vibe_color
+    : DEFAULT_VIBE_COLOR;
+  const vibe = resolveVibeColor(vibeKey);
+
+  const memberSinceLabel = `Member since ${new Date(user.created_at).toLocaleDateString(
+    "en-US",
+    { month: "long", year: "numeric" }
+  )}`;
 
   return (
     <div className="flex min-h-screen items-start justify-center px-6 py-32">
       <div className="w-full max-w-lg">
-        <div className="mb-10">
-          <h1 className="font-display text-4xl text-brand-50 mb-2">
-            Your profile
-          </h1>
-          <p className="text-brand-50/60 text-lg">
-            This is how other community members will see you.
-          </p>
-        </div>
+        <ProfileHero
+          initialDisplayName={profile?.display_name ?? ""}
+          initialBio={profile?.bio ?? ""}
+          initialAvatarUrl={profile?.avatar_url ?? null}
+          initialVibeKey={vibeKey}
+          vibe={vibe}
+          memberSinceLabel={memberSinceLabel}
+        />
 
-        <div className="mb-8 rounded-xl border border-brand-50/10 bg-white/[0.04] px-5 py-4">
-          <p className="text-sm text-brand-50/65">
-            <span className="font-medium text-brand-100">Email:</span>{" "}
-            {user.email}
-          </p>
-          <p className="mt-1 text-sm text-brand-50/65">
-            <span className="font-medium text-brand-100">Member since:</span>{" "}
-            {new Date(user.created_at).toLocaleDateString("en-US", {
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
-        </div>
+        <ProfileStatsRow stats={stats} vibe={vibe} />
 
         <ProfileActivityFeed rows={activityRows} />
 
         <ProfileActivityMarker />
-        <ProfileForm
-          initialDisplayName={profile?.display_name ?? ""}
-          initialBio={profile?.bio ?? ""}
-        />
       </div>
     </div>
   );
