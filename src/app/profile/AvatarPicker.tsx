@@ -13,6 +13,7 @@ interface AvatarPickerProps {
 }
 
 const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
 
 export default function AvatarPicker({
   initialAvatarUrl,
@@ -51,8 +52,8 @@ export default function AvatarPicker({
 
     setError(null);
 
-    if (!file.type.startsWith("image/")) {
-      flashError("Please choose an image file.");
+    if (!ALLOWED_MIME_TYPES.includes(file.type as (typeof ALLOWED_MIME_TYPES)[number])) {
+      flashError("Please choose a JPEG, PNG, WebP, or GIF image.");
       return;
     }
     if (file.size > MAX_BYTES) {

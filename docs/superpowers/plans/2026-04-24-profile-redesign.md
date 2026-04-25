@@ -26,6 +26,7 @@ What this plan creates or modifies:
 
 **New files:**
 - `docs/supabase/005-profile-vibe-and-avatars-bucket.sql` — SQL migration
+- `docs/supabase/006-avatars-bucket-mime-and-size-limits.sql` — server-enforced MIME and size limits
 - `src/lib/vibeColor.ts` — shared swatch keys / hex map / type
 - `src/lib/profileStats.ts` — derived stats fetcher (voices, resonates, streak)
 - `src/app/profile/ProfileHero.tsx` — client component composing the identity hero
@@ -1425,6 +1426,24 @@ Expected: a PR URL is returned. Open it in the browser to confirm.
 - [ ] **Step 3: Done**
 
 The plan is fully executed. The PR is the natural review checkpoint before merging to main.
+
+---
+
+## Notes for the engineer
+
+---
+
+## Task 13: Avatar upload hardening
+
+**Files:**
+- Create: `docs/supabase/006-avatars-bucket-mime-and-size-limits.sql`
+- Modify: `src/app/profile/AvatarPicker.tsx`
+
+Server-enforces MIME type and file size restrictions on the `avatars` bucket so the checks can't be bypassed via direct API calls. The same constraints exist in the client (AvatarPicker) for a friendlier UX, but the bucket enforces them at the storage layer.
+
+Changes:
+1. New SQL migration restricts `avatars` bucket to `image/jpeg`, `image/png`, `image/webp`, `image/gif` and caps file size at 2 MB.
+2. Client AvatarPicker is updated to reject non-allowed MIME types up-front, replacing the generic `"Please choose an image file."` with a specific `"Please choose a JPEG, PNG, WebP, or GIF image."` message.
 
 ---
 
