@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ProfileActivityFeed from "@/components/profile/ProfileActivityFeed";
@@ -15,6 +16,10 @@ import {
 import ProfileHero from "./ProfileHero";
 import ProfileStatsRow from "./ProfileStats";
 import ProfileActivityMarker from "./ProfileActivityMarker";
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -48,6 +53,10 @@ export default async function ProfilePage() {
   return (
     <div className="flex min-h-screen items-start justify-center px-6 py-32">
       <div className="w-full max-w-lg">
+        <h1 className="sr-only">
+          Your profile{profile?.display_name ? ` — ${profile.display_name}` : ""}
+        </h1>
+
         <ProfileHero
           initialDisplayName={profile?.display_name ?? ""}
           initialBio={profile?.bio ?? ""}
