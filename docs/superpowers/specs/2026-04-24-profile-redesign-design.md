@@ -73,7 +73,7 @@ Three full-width-equal chips, horizontal:
 | Chip | Source | Empty state |
 |---|---|---|
 | **Voices** | `select count(*) from answers where user_id = me` | renders as `0` muted |
-| **Resonates** | `select count(*) from resonates r join answers a on r.answer_id = a.id where a.user_id = me` | renders as `0` muted |
+| **Resonates** | upvotes received from other users on the user's own answers (excludes self-resonates, mirroring the activity-feed pattern in `fetchCampfireActivityForUser`) | renders as `0` muted |
 | **Night streak** | consecutive days (from today backward) on which the user has at least one answer | renders as `0` muted |
 
 ### Presentation
@@ -138,7 +138,7 @@ The existing `ProfileActivityFeed` and `ProfileActivityMarker` components are re
 ### Editing — validation
 
 - Empty display name → revert to previous (name is required)
-- Bio > 300 chars → counter goes red; save blocked until trimmed
+- Bio capped at 300 chars via the input's native `maxLength` — typing past the cap is blocked; pasted overflow surfaces an inline red error and blocks save
 - Avatar upload > 2MB or non-image MIME → inline error, no save attempted
 
 ### Loading
