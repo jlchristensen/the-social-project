@@ -22,7 +22,7 @@ function StatChip({ value, label, vibeHex, tooltip }: ChipProps) {
     >
       <div
         className="font-display text-[26px] leading-none"
-        style={{ color: isZero ? "rgba(244,236,223,0.25)" : vibeHex }}
+        style={{ color: isZero ? "rgb(238 246 241 / 0.25)" : vibeHex }}
       >
         {value}
       </div>
