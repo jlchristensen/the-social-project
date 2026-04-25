@@ -26,6 +26,7 @@ What this plan creates or modifies:
 
 **New files:**
 - `docs/supabase/005-profile-vibe-and-avatars-bucket.sql` — SQL migration
+- `docs/supabase/006-avatars-bucket-mime-and-size-limits.sql` — server-enforced MIME and size limits
 - `src/lib/vibeColor.ts` — shared swatch keys / hex map / type
 - `src/lib/profileStats.ts` — derived stats fetcher (voices, resonates, streak)
 - `src/app/profile/ProfileHero.tsx` — client component composing the identity hero
@@ -130,6 +131,10 @@ create policy "Avatars: owner can update"
   using (
     bucket_id = 'avatars'
     and (storage.foldername(name))[1] = auth.uid()::text
+  )
+  with check (
+    bucket_id = 'avatars'
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
 
 drop policy if exists "Avatars: owner can delete" on storage.objects;
@@ -194,7 +199,7 @@ export interface VibeColor {
 }
 
 export const VIBE_COLORS: Record<VibeColorKey, VibeColor> = {
-  ember:  { key: "ember",  name: "Ember",  hex: "#f5d28b", hexLight: "#f5d28b", hexDark: "#b07a31" },
+  ember:  { key: "ember",  name: "Ember",  hex: "#f5d28b", hexLight: "#fae3b0", hexDark: "#b07a31" },
   hearth: { key: "hearth", name: "Hearth", hex: "#cf8a5c", hexLight: "#e3a983", hexDark: "#8c4f2a" },
   forest: { key: "forest", name: "Forest", hex: "#7da38d", hexLight: "#a8c4b4", hexDark: "#3f6855" },
   dusk:   { key: "dusk",   name: "Dusk",   hex: "#b58fd8", hexLight: "#cdb1e6", hexDark: "#6e4d9b" },
@@ -405,7 +410,7 @@ function StatChip({ value, label, vibeHex, tooltip }: ChipProps) {
     >
       <div
         className="font-display text-[26px] leading-none"
-        style={{ color: isZero ? "rgba(244,236,223,0.25)" : vibeHex }}
+        style={{ color: isZero ? "rgb(238 246 241 / 0.25)" : vibeHex }}
       >
         {value}
       </div>
@@ -476,7 +481,7 @@ Client component. Shows 5 swatches, highlights the current selection, and on cli
 ```tsx
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -492,50 +497,78 @@ interface VibeColorPickerProps {
 export default function VibeColorPicker({ initialKey }: VibeColorPickerProps) {
   const router = useRouter();
   const [selected, setSelected] = useState<VibeColorKey>(initialKey);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const requestIdRef = useRef(0);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, []);
+
+  function flashError(message: string) {
+    setError(message);
+    if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    errorTimeoutRef.current = setTimeout(() => setError(null), 5000);
+  }
 
   async function pick(key: VibeColorKey) {
-    if (key === selected || isPending) return;
+    if (key === selected) return;
     const previous = selected;
+    const myRequest = ++requestIdRef.current;
     setSelected(key);
     setError(null);
+    setSaving(true);
 
-    startTransition(async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      if (myRequest === requestIdRef.current) {
         setSelected(previous);
-        setError("You must be signed in.");
-        return;
+        setSaving(false);
+        flashError("You must be signed in.");
       }
+      return;
+    }
 
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({
-          vibe_color: key,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        vibe_color: key,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
 
-      if (updateError) {
-        setSelected(previous);
-        setError(updateError.message);
-        return;
-      }
+    if (myRequest !== requestIdRef.current) return;
 
-      router.refresh();
-    });
+    if (updateError) {
+      setSelected(previous);
+      setSaving(false);
+      flashError(updateError.message);
+      return;
+    }
+
+    setSaving(false);
+    router.refresh();
   }
 
   return (
     <div className="flex items-center gap-2.5">
-      <span className="font-figtree text-[10px] font-medium uppercase tracking-[0.16em] text-brand-50/40">
+      <span
+        id="vibe-color-label"
+        className="font-figtree text-[10px] font-medium uppercase tracking-[0.16em] text-brand-50/40"
+      >
         Vibe
       </span>
-      <div className="flex gap-1.5">
+      <div
+        role="radiogroup"
+        aria-labelledby="vibe-color-label"
+        className="flex gap-1.5"
+      >
         {VIBE_COLOR_KEYS.map((key) => {
           const c = VIBE_COLORS[key];
           const isSelected = key === selected;
@@ -543,10 +576,12 @@ export default function VibeColorPicker({ initialKey }: VibeColorPickerProps) {
             <button
               key={key}
               type="button"
-              onClick={() => pick(key)}
+              role="radio"
+              aria-checked={isSelected}
               aria-label={c.name}
-              aria-pressed={isSelected}
-              className="h-[18px] w-[18px] rounded-[5px] border border-white/10 transition-transform hover:scale-110 focus:outline-none"
+              onClick={() => pick(key)}
+              disabled={saving}
+              className="h-[18px] w-[18px] rounded-[5px] border border-white/10 transition-transform hover:scale-110 focus-visible:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ember/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06160d] disabled:cursor-wait"
               style={{
                 background: c.hex,
                 boxShadow: isSelected
@@ -631,21 +666,41 @@ export default function InlineTextField({
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      // Place caret at end
       const el = inputRef.current;
       const len = el.value.length;
       el.setSelectionRange(len, len);
     }
   }, [editing]);
 
+  function flashError(message: string) {
+    setError(message);
+    if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    errorTimeoutRef.current = setTimeout(() => setError(null), 5000);
+  }
+
   function startEditing() {
+    if (saving) return;
     setDraft(value);
     setError(null);
     setEditing(true);
+  }
+
+  function returnFocusToButton() {
+    queueMicrotask(() => buttonRef.current?.focus());
   }
 
   async function commit() {
@@ -655,14 +710,16 @@ export default function InlineTextField({
     if (required && trimmed.length === 0) {
       setEditing(false);
       setDraft(value);
+      returnFocusToButton();
       return;
     }
     if (trimmed.length > maxLength) {
-      setError(`Too long — keep it under ${maxLength} characters.`);
+      flashError(`Too long — keep it under ${maxLength} characters.`);
       return;
     }
     if (trimmed === value) {
       setEditing(false);
+      returnFocusToButton();
       return;
     }
 
@@ -676,7 +733,8 @@ export default function InlineTextField({
     if (!user) {
       setSaving(false);
       setEditing(false);
-      setError("You must be signed in.");
+      flashError("You must be signed in.");
+      returnFocusToButton();
       return;
     }
 
@@ -691,22 +749,24 @@ export default function InlineTextField({
     setSaving(false);
 
     if (updateError) {
-      setError(updateError.message);
+      flashError(updateError.message);
       return;
     }
 
     setValue(trimmed);
     setEditing(false);
     setJustSaved(true);
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    flashTimeoutRef.current = setTimeout(() => setJustSaved(false), 700);
     router.refresh();
-    setTimeout(() => setError(null), 5000);
-    setTimeout(() => setJustSaved(false), 700);
+    returnFocusToButton();
   }
 
   function cancel() {
     setEditing(false);
     setDraft(value);
     setError(null);
+    returnFocusToButton();
   }
 
   const flashClass = justSaved
@@ -765,11 +825,16 @@ export default function InlineTextField({
     );
   }
 
+  const editLabel =
+    column === "display_name" ? "Edit display name" : "Edit bio";
+
   return (
     <div className="flex flex-col">
       <button
+        ref={buttonRef}
         type="button"
         onClick={startEditing}
+        aria-label={editLabel}
         className={`${sharedClasses} text-left ${
           hasValue ? "" : emptyClassName ?? "italic text-brand-50/35"
         }`}
@@ -816,7 +881,7 @@ Renders the avatar (photo with vibe ring, or fallback letter on vibe gradient). 
 ```tsx
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -840,6 +905,20 @@ export default function AvatarPicker({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, []);
+
+  function flashError(message: string) {
+    setError(message);
+    if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    errorTimeoutRef.current = setTimeout(() => setError(null), 5000);
+  }
 
   function openPicker() {
     if (uploading) return;
@@ -848,20 +927,21 @@ export default function AvatarPicker({
 
   async function onFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    e.target.value = ""; // allow re-selecting the same file later
+    e.target.value = "";
     if (!file) return;
 
     setError(null);
 
     if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+      flashError("Please choose an image file.");
       return;
     }
     if (file.size > MAX_BYTES) {
-      setError("Image must be under 2 MB.");
+      flashError("Image must be under 2 MB.");
       return;
     }
 
+    const myRequest = ++requestIdRef.current;
     setUploading(true);
 
     const supabase = createClient();
@@ -869,8 +949,10 @@ export default function AvatarPicker({
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      setUploading(false);
-      setError("You must be signed in.");
+      if (myRequest === requestIdRef.current) {
+        setUploading(false);
+        flashError("You must be signed in.");
+      }
       return;
     }
 
@@ -884,9 +966,11 @@ export default function AvatarPicker({
         upsert: false,
       });
 
+    if (myRequest !== requestIdRef.current) return;
+
     if (uploadError) {
       setUploading(false);
-      setError(uploadError.message);
+      flashError(uploadError.message);
       return;
     }
 
@@ -902,10 +986,12 @@ export default function AvatarPicker({
       })
       .eq("id", user.id);
 
+    if (myRequest !== requestIdRef.current) return;
+
     setUploading(false);
 
     if (updateError) {
-      setError(updateError.message);
+      flashError(updateError.message);
       return;
     }
 
@@ -917,6 +1003,7 @@ export default function AvatarPicker({
     initialDisplayName.trim().charAt(0).toUpperCase() || "?";
   const ringStyle = { boxShadow: `0 0 0 3px ${vibe.hex}` };
   const fallbackGradient = `linear-gradient(135deg, ${vibe.hexLight}, ${vibe.hexDark})`;
+  const altText = `${initialDisplayName.trim() || "Your"} avatar`;
 
   return (
     <div className="flex flex-col">
@@ -925,14 +1012,17 @@ export default function AvatarPicker({
         onClick={openPicker}
         disabled={uploading}
         aria-label="Change avatar"
-        className="relative h-[76px] w-[76px] flex-shrink-0 overflow-visible rounded-full transition-transform hover:-translate-y-px focus:outline-none disabled:cursor-wait"
+        className="relative h-[76px] w-[76px] flex-shrink-0 overflow-visible rounded-full transition-transform hover:-translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-ember/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06160d] disabled:cursor-wait"
         style={ringStyle}
       >
         <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
           {avatarUrl ? (
+            // `unoptimized` keeps avatars off Next's image optimizer so we don't
+            // need to whitelist the Supabase storage host in next.config.ts.
+            // Acceptable here because the rendered size is fixed at 76px.
             <Image
               src={avatarUrl}
-              alt=""
+              alt={altText}
               width={76}
               height={76}
               className="h-full w-full object-cover"
@@ -998,10 +1088,9 @@ git push
 
 - [ ] **Step 1: Create the hero**
 
-Composes `AvatarPicker`, the inline name field, the member-since line, the inline bio field, and the `VibeColorPicker`. This is the only place that arranges these client components together. It's itself a client component because it co-locates them — the page passes server-fetched values down.
+Composes `AvatarPicker`, the inline name field, the member-since line, the inline bio field, and the `VibeColorPicker`. This is the only place that arranges these client components together. It is a server component (no state of its own); each interactive child carries its own client boundary.
 
 ```tsx
-"use client";
 
 import AvatarPicker from "./AvatarPicker";
 import InlineTextField from "./InlineTextField";
@@ -1093,6 +1182,7 @@ git push
 Replace the entire contents of the file with this. The page is a server component. It fetches profile + activity + stats in parallel, then composes the new components.
 
 ```tsx
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ProfileActivityFeed from "@/components/profile/ProfileActivityFeed";
@@ -1110,6 +1200,10 @@ import {
 import ProfileHero from "./ProfileHero";
 import ProfileStatsRow from "./ProfileStats";
 import ProfileActivityMarker from "./ProfileActivityMarker";
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -1143,6 +1237,10 @@ export default async function ProfilePage() {
   return (
     <div className="flex min-h-screen items-start justify-center px-6 py-32">
       <div className="w-full max-w-lg">
+        <h1 className="sr-only">
+          Your profile{profile?.display_name ? ` — ${profile.display_name}` : ""}
+        </h1>
+
         <ProfileHero
           initialDisplayName={profile?.display_name ?? ""}
           initialBio={profile?.bio ?? ""}
@@ -1328,6 +1426,24 @@ Expected: a PR URL is returned. Open it in the browser to confirm.
 - [ ] **Step 3: Done**
 
 The plan is fully executed. The PR is the natural review checkpoint before merging to main.
+
+---
+
+## Notes for the engineer
+
+---
+
+## Task 13: Avatar upload hardening
+
+**Files:**
+- Create: `docs/supabase/006-avatars-bucket-mime-and-size-limits.sql`
+- Modify: `src/app/profile/AvatarPicker.tsx`
+
+Server-enforces MIME type and file size restrictions on the `avatars` bucket so the checks can't be bypassed via direct API calls. The same constraints exist in the client (AvatarPicker) for a friendlier UX, but the bucket enforces them at the storage layer.
+
+Changes:
+1. New SQL migration restricts `avatars` bucket to `image/jpeg`, `image/png`, `image/webp`, `image/gif` and caps file size at 2 MB.
+2. Client AvatarPicker is updated to reject non-allowed MIME types up-front, replacing the generic `"Please choose an image file."` with a specific `"Please choose a JPEG, PNG, WebP, or GIF image."` message.
 
 ---
 
