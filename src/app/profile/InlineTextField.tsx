@@ -36,21 +36,41 @@ export default function InlineTextField({
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      // Place caret at end
       const el = inputRef.current;
       const len = el.value.length;
       el.setSelectionRange(len, len);
     }
   }, [editing]);
 
+  function flashError(message: string) {
+    setError(message);
+    if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    errorTimeoutRef.current = setTimeout(() => setError(null), 5000);
+  }
+
   function startEditing() {
+    if (saving) return;
     setDraft(value);
     setError(null);
     setEditing(true);
+  }
+
+  function returnFocusToButton() {
+    queueMicrotask(() => buttonRef.current?.focus());
   }
 
   async function commit() {
@@ -60,14 +80,16 @@ export default function InlineTextField({
     if (required && trimmed.length === 0) {
       setEditing(false);
       setDraft(value);
+      returnFocusToButton();
       return;
     }
     if (trimmed.length > maxLength) {
-      setError(`Too long — keep it under ${maxLength} characters.`);
+      flashError(`Too long — keep it under ${maxLength} characters.`);
       return;
     }
     if (trimmed === value) {
       setEditing(false);
+      returnFocusToButton();
       return;
     }
 
@@ -81,7 +103,8 @@ export default function InlineTextField({
     if (!user) {
       setSaving(false);
       setEditing(false);
-      setError("You must be signed in.");
+      flashError("You must be signed in.");
+      returnFocusToButton();
       return;
     }
 
@@ -96,22 +119,24 @@ export default function InlineTextField({
     setSaving(false);
 
     if (updateError) {
-      setError(updateError.message);
+      flashError(updateError.message);
       return;
     }
 
     setValue(trimmed);
     setEditing(false);
     setJustSaved(true);
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    flashTimeoutRef.current = setTimeout(() => setJustSaved(false), 700);
     router.refresh();
-    setTimeout(() => setError(null), 5000);
-    setTimeout(() => setJustSaved(false), 700);
+    returnFocusToButton();
   }
 
   function cancel() {
     setEditing(false);
     setDraft(value);
     setError(null);
+    returnFocusToButton();
   }
 
   const flashClass = justSaved
@@ -170,11 +195,16 @@ export default function InlineTextField({
     );
   }
 
+  const editLabel =
+    column === "display_name" ? "Edit display name" : "Edit bio";
+
   return (
     <div className="flex flex-col">
       <button
+        ref={buttonRef}
         type="button"
         onClick={startEditing}
+        aria-label={editLabel}
         className={`${sharedClasses} text-left ${
           hasValue ? "" : emptyClassName ?? "italic text-brand-50/35"
         }`}
