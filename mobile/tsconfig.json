@@ -1,0 +1,22 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@campfire": ["../src/lib/campfire/index.ts"],
+      "@campfire/*": ["../src/lib/campfire/*"],
+      // The shared campfire library lives outside this folder, so by default it
+      // resolves the website's copy of supabase-js while the app resolves its
+      // own. TypeScript then treats the two SupabaseClient types as unrelated.
+      // Pinning both to the app's copy keeps them a single identity.
+      "@supabase/supabase-js": ["./node_modules/@supabase/supabase-js"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "../src/lib/campfire/**/*.ts"
+  ]
+}
