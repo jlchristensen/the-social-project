@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import DailyQuestion from "@/components/community/DailyQuestion";
 import AnswerGate from "@/components/community/AnswerGate";
 import CommunityFeed from "@/components/community/CommunityFeed";
-import type { Answer } from "@/lib/community/types";
+import { getCampfireSnapshot } from "@/lib/campfire";
 
 function Embers() {
   return (
@@ -20,105 +20,19 @@ function Embers() {
  */
 export default async function CommunityPage() {
   const supabase = await createClient();
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Chicago",
-  });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const [{ data: question }, { data: { user } }] = await Promise.all([
-    supabase
-      .from("daily_questions")
-      .select("*")
-      .eq("active_date", today)
-      .single(),
-    supabase.auth.getUser(),
-  ]);
+  const snapshot = await getCampfireSnapshot(supabase, user?.id ?? null);
 
-  let answerCount = 0;
-  let answers: Answer[] = [];
-  let hasAnswered = false;
-
-  if (question) {
-    const [{ count }, ownAnswerRes] = await Promise.all([
-      supabase
-        .from("answers")
-        .select("*", { count: "exact", head: true })
-        .eq("question_id", question.id),
-      user
-        ? supabase
-            .from("answers")
-            .select("id")
-            .eq("question_id", question.id)
-            .eq("user_id", user.id)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
-    ]);
-    answerCount = count ?? 0;
-    hasAnswered = !!ownAnswerRes.data;
-
-    if (user && hasAnswered) {
-      const { data: answersData } = await supabase
-        .from("answers")
-        .select("*")
-        .eq("question_id", question.id)
-        .order("created_at", { ascending: false });
-
-      if (answersData && answersData.length > 0) {
-        const userIds = [...new Set(answersData.map((a) => a.user_id))];
-        const answerIds = answersData.map((a) => a.id);
-
-        const [{ data: profiles }, { data: upvotes }, { data: replies }] =
-          await Promise.all([
-            supabase
-              .from("profiles")
-              .select("id, display_name")
-              .in("id", userIds),
-            supabase
-              .from("answer_upvotes")
-              .select("answer_id, user_id")
-              .in("answer_id", answerIds),
-            supabase
-              .from("answer_replies")
-              .select("answer_id")
-              .in("answer_id", answerIds),
-          ]);
-
-        const profileMap = new Map(
-          (profiles ?? []).map((p) => [p.id, p.display_name])
-        );
-
-        const upvotesByAnswer = new Map<string, string[]>();
-        for (const u of upvotes ?? []) {
-          const list = upvotesByAnswer.get(u.answer_id) ?? [];
-          list.push(u.user_id);
-          upvotesByAnswer.set(u.answer_id, list);
-        }
-
-        const replyCountByAnswer = new Map<string, number>();
-        for (const r of replies ?? []) {
-          replyCountByAnswer.set(
-            r.answer_id,
-            (replyCountByAnswer.get(r.answer_id) ?? 0) + 1
-          );
-        }
-
-        answers = answersData.map((a) => {
-          const voters = upvotesByAnswer.get(a.id) ?? [];
-          return {
-            id: a.id,
-            question_id: a.question_id,
-            user_id: a.user_id,
-            body: a.body,
-            is_anonymous: a.is_anonymous,
-            created_at: a.created_at,
-            display_name: profileMap.get(a.user_id) ?? null,
-            upvote_count: voters.length,
-            reply_count: replyCountByAnswer.get(a.id) ?? 0,
-            has_upvoted: voters.includes(user.id),
-          };
-        });
-      }
-    }
+  if (!snapshot.ok) {
+    // The read itself failed — surface it rather than rendering the quiet-night
+    // state, which would tell every visitor there's no question when there is.
+    throw new Error(`Could not load the campfire: ${snapshot.error}`);
   }
+
+  const { question, answerCount, hasAnswered, answers } = snapshot.data;
 
   // ── Scene background spans the full page (replaces the body's light wash) ──
   const sceneBg =

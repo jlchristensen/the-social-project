@@ -1,5 +1,12 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import {
+  formatCampfireDate,
+  getAnswerCount,
+  getCampfireDate,
+  getDailyQuestion,
+  type DailyQuestion,
+} from "@/lib/campfire";
 import { blogPosts } from "@/data/blog-posts";
 import { resources } from "@/data/resources";
 import HeaderB from "./HeaderB";
@@ -13,11 +20,6 @@ import "./styles.css";
    single dark surface — the one moment of full contrast.
    ──────────────────────────────────────────────────────────── */
 
-type DailyQuestion = {
-  id: string;
-  question_text: string;
-};
-
 type CampfireData = {
   question: DailyQuestion | null;
   answerCount: number;
@@ -25,35 +27,23 @@ type CampfireData = {
 };
 
 async function getCampfireData(): Promise<CampfireData> {
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Chicago",
-  });
-  const dateLabel = new Date(`${today}T00:00:00`).toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
+  const today = getCampfireDate();
+  const dateLabel = formatCampfireDate(today);
 
-  try {
-    const supabase = await createClient();
-    const { data: question } = await supabase
-      .from("daily_questions")
-      .select("id, question_text")
-      .eq("active_date", today)
-      .single<DailyQuestion>();
+  const supabase = await createClient();
 
-    let answerCount = 0;
-    if (question) {
-      const { count } = await supabase
-        .from("answers")
-        .select("*", { count: "exact", head: true })
-        .eq("question_id", question.id);
-      answerCount = count ?? 0;
-    }
-    return { question, answerCount, dateLabel };
-  } catch {
-    return { question: null, answerCount: 0, dateLabel };
+  // Homepage teaser: degrade to the quiet-night state on failure rather than
+  // taking the page down. The campfire page itself surfaces errors properly.
+  const questionResult = await getDailyQuestion(supabase, today);
+  const question = questionResult.ok ? questionResult.data : null;
+
+  let answerCount = 0;
+  if (question) {
+    const countResult = await getAnswerCount(supabase, question.id);
+    if (countResult.ok) answerCount = countResult.data;
   }
+
+  return { question, answerCount, dateLabel };
 }
 
 const pillars = [

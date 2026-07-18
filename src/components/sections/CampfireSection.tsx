@@ -1,6 +1,12 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import { createClient } from "@/lib/supabase/server";
+import {
+  formatCampfireDate,
+  getAnswerCount,
+  getCampfireDate,
+  getDailyQuestion,
+} from "@/lib/campfire";
 
 function Embers() {
   return (
@@ -12,30 +18,21 @@ function Embers() {
 
 export default async function CampfireSection() {
   const supabase = await createClient();
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Chicago",
-  });
+  const today = getCampfireDate();
 
-  const { data: question } = await supabase
-    .from("daily_questions")
-    .select("*")
-    .eq("active_date", today)
-    .single();
+  // A teaser on the homepage: if this read fails, fall back to the quiet-night
+  // copy rather than taking the whole homepage down with it. The campfire page
+  // itself surfaces the error properly.
+  const questionResult = await getDailyQuestion(supabase, today);
+  const question = questionResult.ok ? questionResult.data : null;
 
   let answerCount = 0;
   if (question) {
-    const { count } = await supabase
-      .from("answers")
-      .select("*", { count: "exact", head: true })
-      .eq("question_id", question.id);
-    answerCount = count ?? 0;
+    const countResult = await getAnswerCount(supabase, question.id);
+    if (countResult.ok) answerCount = countResult.data;
   }
 
-  const dateLabel = new Date(`${today}T00:00:00`).toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
+  const dateLabel = formatCampfireDate(today);
 
   return (
     <section className="px-6 pt-12 pb-20 md:pt-16 md:pb-28">
