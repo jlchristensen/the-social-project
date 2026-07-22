@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getAnswerCount } from "@/lib/campfire";
 import { createClient } from "@/lib/supabase/server";
 import { blogPosts } from "@/data/blog-posts";
 import Reveal from "./Reveal";
@@ -90,11 +91,9 @@ async function getCampfire(): Promise<{
 
     let answerCount = 0;
     if (question) {
-      const { count } = await supabase
-        .from("answers")
-        .select("*", { count: "exact", head: true })
-        .eq("question_id", question.id);
-      answerCount = count ?? 0;
+      // Via the count function so it survives the gated read policy (009).
+      const result = await getAnswerCount(supabase, question.id);
+      if (result.ok) answerCount = result.data;
     }
     return { question, answerCount, dateLabel };
   } catch {

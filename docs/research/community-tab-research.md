@@ -1,5 +1,8 @@
 # Community Tab Research Report
 
+**Status:** Acted on — became **The Campfire** (web `/community` + Expo mobile + Supabase). Use this doc for iteration ideas, not greenfield build.
+**Follow-up (July 2026):** Open security gap on gate/anonymity — `docs/security/campfire-gate-and-anonymity.md`. Roadmap Phase 2 prioritizes that fix before growth.
+
 ## Topic
 
 How to build an engaging "Community" tab for The Social Project's website — featuring a daily question, an "answer before you read" participation gate, and Reddit-style community discussion.

@@ -2,7 +2,8 @@
 
 **Date:** April 10, 2026
 **Task:** Roadmap item 1.1 — Choose email platform for newsletter and subscriber capture
-**Status:** Complete — Recommendation made
+**Status:** Complete — Recommendation made **and implemented**
+**Follow-up (July 2026):** Kit is wired via `src/app/api/subscribe/route.ts`. Homepage `CTASection` is intentionally hidden while Campfire is the focus. Open decision = when to re-enable the CTA, not which platform.
 
 ---
 

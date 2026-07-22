@@ -2,7 +2,8 @@
 
 **Date:** April 15, 2026
 **Task:** Roadmap items 1.6–1.8 — Choose and install analytics, set up conversion tracking
-**Status:** Complete — Recommendation made
+**Status:** Complete for **website** analytics (Plausible recommended); **install still outstanding**
+**Follow-up (July 2026):** Campfire now has a mobile app. Website-only Plausible may not cover retention / gate / answer-funnel metrics on Expo. Do a short Researcher refresh for web+mobile product analytics before Builder installs (roadmap Phase 2.3–2.4). Still don’t restart a full bake-off from zero — extend this doc.
 
 ---
 
