@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getAnswerCount } from "@/lib/campfire";
 import { createClient } from "@/lib/supabase/server";
 
 interface DailyQuestion {
@@ -25,11 +26,9 @@ async function getTonight(): Promise<{
 
     let answerCount = 0;
     if (question) {
-      const { count } = await supabase
-        .from("answers")
-        .select("*", { count: "exact", head: true })
-        .eq("question_id", question.id);
-      answerCount = count ?? 0;
+      // Via the count function so it survives the gated read policy (009).
+      const result = await getAnswerCount(supabase, question.id);
+      if (result.ok) answerCount = result.data;
     }
 
     return { question, answerCount, today };
