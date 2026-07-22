@@ -136,19 +136,25 @@ export async function getDailyQuestion(
   return { ok: true, data: data ?? null };
 }
 
-/** How many people have answered a question. */
+/**
+ * How many people have answered a question.
+ *
+ * Reads through the `campfire_answer_count` SECURITY DEFINER function rather
+ * than counting rows directly: once the read policy is gated, an un-answered
+ * viewer can't see the rows, but they still need the count for the locked
+ * "moment" screen. The function returns the true count without exposing rows.
+ */
 export async function getAnswerCount(
   supabase: SupabaseClient,
   questionId: string
 ): Promise<Outcome<number>> {
-  const { count, error } = await supabase
-    .from("answers")
-    .select("*", { count: "exact", head: true })
-    .eq("question_id", questionId);
+  const { data, error } = await supabase.rpc("campfire_answer_count", {
+    p_question_id: questionId,
+  });
 
   if (error) return { ok: false, error: error.message };
 
-  return { ok: true, data: count ?? 0 };
+  return { ok: true, data: (data as number | null) ?? 0 };
 }
 
 /** Whether a given user has already answered — the answer gate's condition. */
@@ -169,44 +175,47 @@ export async function hasUserAnswered(
   return { ok: true, data: data !== null };
 }
 
+/** The shape `get_campfire_answers` returns — already gated and redacted. */
+interface CampfireAnswerRow {
+  id: string;
+  question_id: string;
+  body: string;
+  is_anonymous: boolean;
+  created_at: string;
+  /** Null for an anonymous answer that isn't the caller's own. */
+  author_id: string | null;
+  /** Null for an anonymous answer. */
+  display_name: string | null;
+}
+
 /**
  * Every answer to a question, with display names, upvote counts, reply counts,
  * and whether `viewerId` has upvoted each one.
  *
- * Profiles, upvotes and replies are fetched in three batched queries and joined
- * in memory rather than per-answer, so answer volume doesn't multiply round trips.
+ * The base rows come from the `get_campfire_answers` SECURITY DEFINER function,
+ * which is where the security actually lives: it returns rows only to a caller
+ * who has answered (the gate), and redacts the author id and name of anonymous
+ * answers inside the database, so identity never crosses the wire. Upvotes and
+ * replies are then batched and joined in memory so volume doesn't multiply
+ * round trips.
  */
 export async function getAnswersWithMeta(
   supabase: SupabaseClient,
   questionId: string,
   viewerId: string
 ): Promise<Outcome<Answer[]>> {
-  const { data: answersData, error } = await supabase
-    .from("answers")
-    .select("id, question_id, user_id, body, is_anonymous, created_at")
-    .eq("question_id", questionId)
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.rpc("get_campfire_answers", {
+    p_question_id: questionId,
+  });
 
   if (error) return { ok: false, error: error.message };
-  if (!answersData || answersData.length === 0) return { ok: true, data: [] };
 
-  // Only look up display names for non-anonymous answers. An anonymous poster's
-  // identity must never leave here attached to their answer, so we never even
-  // fetch their profile.
-  //
-  // NOTE: this redacts the returned `Answer` objects, but the raw `answers`
-  // rows still carry `user_id`/`is_anonymous` over the wire because this query
-  // runs on the client. Closing that fully needs a `SECURITY DEFINER` RPC that
-  // redacts inside the database — tracked as a backend task.
-  const userIds = [
-    ...new Set(
-      answersData.filter((a) => !a.is_anonymous).map((a) => a.user_id)
-    ),
-  ];
-  const answerIds = answersData.map((a) => a.id);
+  const rows = (data as CampfireAnswerRow[] | null) ?? [];
+  if (rows.length === 0) return { ok: true, data: [] };
 
-  const [profilesRes, upvotesRes, repliesRes] = await Promise.all([
-    supabase.from("profiles").select("id, display_name").in("id", userIds),
+  const answerIds = rows.map((a) => a.id);
+
+  const [upvotesRes, repliesRes] = await Promise.all([
     supabase
       .from("answer_upvotes")
       .select("answer_id, user_id")
@@ -217,13 +226,8 @@ export async function getAnswersWithMeta(
       .in("answer_id", answerIds),
   ]);
 
-  const firstFailure =
-    profilesRes.error ?? upvotesRes.error ?? repliesRes.error;
+  const firstFailure = upvotesRes.error ?? repliesRes.error;
   if (firstFailure) return { ok: false, error: firstFailure.message };
-
-  const displayNameById = new Map<string, string | null>(
-    (profilesRes.data ?? []).map((p) => [p.id, p.display_name])
-  );
 
   const upvoterIdsByAnswer = new Map<string, string[]>();
   for (const upvote of upvotesRes.data ?? []) {
@@ -240,21 +244,18 @@ export async function getAnswersWithMeta(
     );
   }
 
-  const answers: Answer[] = answersData.map((a) => {
+  const answers: Answer[] = rows.map((a) => {
     const voters = upvoterIdsByAnswer.get(a.id) ?? [];
-    const isSelf = a.user_id === viewerId;
     return {
       id: a.id,
       question_id: a.question_id,
-      // Redact the author of an anonymous answer for everyone but its author,
-      // so a viewer can still recognise their own without learning others'.
-      user_id: a.is_anonymous && !isSelf ? "" : a.user_id,
+      // `author_id` is already null for redacted anonymous rows; the Answer
+      // type wants a string, so an empty id stands in.
+      user_id: a.author_id ?? "",
       body: a.body,
       is_anonymous: a.is_anonymous,
       created_at: a.created_at,
-      display_name: a.is_anonymous
-        ? null
-        : displayNameById.get(a.user_id) ?? null,
+      display_name: a.display_name,
       upvote_count: voters.length,
       reply_count: replyCountByAnswer.get(a.id) ?? 0,
       has_upvoted: voters.includes(viewerId),

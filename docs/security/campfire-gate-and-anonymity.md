@@ -1,6 +1,8 @@
 # Campfire: post-to-unlock gate & anonymity — server-side hardening
 
-**Status:** open — needs a coordinated Supabase migration + client change (do them in one PR).
+**Status:** implemented — rolling out. Code in `docs/supabase/008-campfire-gate-functions.sql`,
+`docs/supabase/009-campfire-gate-policy.sql`, and the RPC wiring in `src/lib/campfire/queries.ts`.
+Apply 008 → deploy the client → apply 009 (order matters; see the SQL headers).
 **Found by:** adversarial review of the mobile build, 2026-07-22.
 **Severity:** both High. Not on fire (app is pre-launch), but must land before real users.
 
