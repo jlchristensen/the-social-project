@@ -23,7 +23,12 @@ export {
   getAnswersWithMeta,
   getReplies,
   getCampfireSnapshot,
+  submitAnswer,
+  MIN_ANSWER_LENGTH,
+  MAX_ANSWER_LENGTH,
 } from "./queries";
+
+export type { SubmitAnswerInput, SubmitAnswerResult } from "./queries";
 
 export type {
   Answer,
