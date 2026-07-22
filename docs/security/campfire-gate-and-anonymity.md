@@ -1,8 +1,12 @@
 # Campfire: post-to-unlock gate & anonymity — server-side hardening
 
-**Status:** implemented — rolling out. Code in `docs/supabase/008-campfire-gate-functions.sql`,
-`docs/supabase/009-campfire-gate-policy.sql`, and the RPC wiring in `src/lib/campfire/queries.ts`.
-Apply 008 → deploy the client → apply 009 (order matters; see the SQL headers).
+**Status:** ✅ DONE — enforced in production and verified end-to-end (2026-07-22).
+`008` (functions) and `009` (read policy) are applied; the client reads through
+the RPCs (`src/lib/campfire/queries.ts`). Verified against the live DB: an
+un-answered user gets nothing via the RPC *or* a direct table read, anonymous
+authors come back with `null` id/name, and the count, posting, and the
+answered-user feed all still work. Kept for the record — the two findings below
+are closed.
 **Found by:** adversarial review of the mobile build, 2026-07-22.
 **Severity:** both High. Not on fire (app is pre-launch), but must land before real users.
 
