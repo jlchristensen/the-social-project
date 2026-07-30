@@ -130,6 +130,65 @@ function excerpt(body: string, max = 100): string {
   return `${t.slice(0, max)}…`;
 }
 
+export interface UnreadActivityCounts {
+  resonates: number;
+  replies: number;
+}
+
+/**
+ * How many resonates and replies landed on this user's answers since they
+ * last viewed their activity feed. Powers the "while you were away" greeting.
+ */
+export async function fetchUnreadActivityCounts(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<UnreadActivityCounts> {
+  const none: UnreadActivityCounts = { resonates: 0, replies: 0 };
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("activity_last_viewed_at")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (profileError || !profile) return none;
+
+  const last =
+    (profile as { activity_last_viewed_at?: string | null })
+      .activity_last_viewed_at ?? "1970-01-01T00:00:00.000Z";
+
+  const { data: answers, error: answersError } = await supabase
+    .from("answers")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (answersError || !answers?.length) return none;
+
+  const answerIds = answers.map((a) => a.id);
+
+  const [upvotesRes, repliesRes] = await Promise.all([
+    supabase
+      .from("answer_upvotes")
+      .select("id", { count: "exact", head: true })
+      .in("answer_id", answerIds)
+      .neq("user_id", userId)
+      .gt("created_at", last),
+    supabase
+      .from("answer_replies")
+      .select("id", { count: "exact", head: true })
+      .in("answer_id", answerIds)
+      .neq("user_id", userId)
+      .gt("created_at", last),
+  ]);
+
+  if (upvotesRes.error || repliesRes.error) return none;
+
+  return {
+    resonates: upvotesRes.count ?? 0,
+    replies: repliesRes.count ?? 0,
+  };
+}
+
 /**
  * Replies and resonates on this user's Campfire answers (others only), newest first.
  */

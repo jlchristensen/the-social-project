@@ -14,6 +14,7 @@ export {
   CAMPFIRE_TIME_ZONE,
   getCampfireDate,
   formatCampfireDate,
+  secondsUntilCampfireMidnight,
 } from "./date";
 
 export {
@@ -23,6 +24,7 @@ export {
   getAnswersWithMeta,
   getReplies,
   getCampfireSnapshot,
+  getUserNights,
   submitAnswer,
   MIN_ANSWER_LENGTH,
   MAX_ANSWER_LENGTH,
@@ -34,6 +36,7 @@ export type {
   Answer,
   CampfireSnapshot,
   DailyQuestion,
+  Night,
   Outcome,
   Reply,
 } from "./types";

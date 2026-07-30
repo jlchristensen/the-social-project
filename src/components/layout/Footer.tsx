@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CampfireMark from "@/components/layout/CampfireMark";
 
 /**
  * One quiet row at the bottom of the night. The Gift Shop lives here now —
@@ -27,10 +28,7 @@ export default function Footer() {
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <Link href="/" className="group inline-flex items-center gap-3">
-            <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-50/25 transition-colors group-hover:border-brand-200">
-              <span className="absolute inset-1 rounded-full bg-brand-200/85" />
-              <span className="absolute inset-[9px] rounded-full bg-brand-700" />
-            </span>
+            <CampfireMark className="h-6 w-6 -translate-y-0.5 transition-transform duration-500 group-hover:scale-110" />
             <span className="font-display text-lg tracking-tight text-brand-50">
               The Social Project
             </span>

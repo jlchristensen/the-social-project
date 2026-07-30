@@ -270,6 +270,129 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────
+   Circle reveal — the unlock moment. When you've just answered,
+   the feed doesn't appear: the blur melts off it, card by card.
+   Applied with a staggered animation-delay per card.
+   ──────────────────────────────────────────────────────────── */
+.circle-reveal {
+  animation: circle-reveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: filter, opacity, transform;
+}
+
+@keyframes circle-reveal {
+  0% {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translateY(18px) scale(0.985);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Answer arrive — a voice that joined the circle while you were
+   sitting here. Warm ember flash that settles into the card.
+   ──────────────────────────────────────────────────────────── */
+.answer-arrive {
+  animation: answer-arrive 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes answer-arrive {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+    box-shadow: 0 0 0 1px rgba(232, 184, 106, 0.45),
+      0 0 60px -10px rgba(232, 184, 106, 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 0 1px rgba(232, 184, 106, 0.3),
+      0 0 40px -10px rgba(232, 184, 106, 0.35);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Ember burst — resonating releases sparks that float up off
+   the flame and fade. Each particle drifts by --dx.
+   ──────────────────────────────────────────────────────────── */
+.ember-particle {
+  position: absolute;
+  bottom: 60%;
+  left: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #f5d28b;
+  box-shadow: 0 0 8px 2px rgba(245, 210, 139, 0.8);
+  pointer-events: none;
+  animation: ember-burst 0.9s ease-out forwards;
+}
+
+@keyframes ember-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0px), -44px) scale(0.25);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Count pulse — the live "voices waiting" number just grew.
+   ──────────────────────────────────────────────────────────── */
+.count-pulse {
+  animation: count-pulse 1s ease-out;
+}
+
+@keyframes count-pulse {
+  0% {
+    transform: scale(1);
+    text-shadow: 0 0 0 rgba(245, 210, 139, 0);
+  }
+  30% {
+    transform: scale(1.06);
+    text-shadow: 0 0 18px rgba(245, 210, 139, 0.9);
+  }
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 0 rgba(245, 210, 139, 0);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Dying fire — in the last stretch before midnight the embers
+   fade and the aura pulls in. Driven by <DyingFire/> via a
+   body attribute so the whole scene responds together.
+   ──────────────────────────────────────────────────────────── */
+/* Container-level opacity/filter: the child animations own their
+   opacity keyframes, so overrides must sit one level up. */
+body[data-fire-dying] .campfire-embers {
+  opacity: 0.35;
+  transition: opacity 3s ease;
+}
+
+body[data-fire-dying] .campfire-aura {
+  filter: blur(40px) brightness(0.55);
+  transition: filter 3s ease;
+}
+
+/* ────────────────────────────────────────────────────────────
    Respect reduced motion for everything decorative.
    ──────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -281,10 +404,19 @@ body {
   .campfire-aura,
   .campfire-embers i,
   .campfire-gate-dot,
-  .flame-pulse {
+  .flame-pulse,
+  .circle-reveal,
+  .answer-arrive,
+  .ember-particle,
+  .count-pulse {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
+  }
+
+  .ember-particle {
+    display: none !important;
   }
 }

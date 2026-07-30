@@ -48,11 +48,16 @@ function Flame({ className }: { className?: string }) {
   );
 }
 
+/** Horizontal drift for each spark in a burst, in px. */
+const SPARK_DRIFTS = [-14, -5, 3, 11, 18];
+
 export default function AnswerCard({ answer, isOwn }: AnswerCardProps) {
   const router = useRouter();
   const [upvoted, setUpvoted] = useState(answer.has_upvoted);
   const [upvoteCount, setUpvoteCount] = useState(answer.upvote_count);
   const [showReplies, setShowReplies] = useState(false);
+  /** Each entry is one live ember burst; entries expire after the animation. */
+  const [bursts, setBursts] = useState<number[]>([]);
 
   const displayName = answer.is_anonymous
     ? "Anonymous"
@@ -72,6 +77,14 @@ export default function AnswerCard({ answer, isOwn }: AnswerCardProps) {
     const wasUpvoted = upvoted;
     setUpvoted(!wasUpvoted);
     setUpvoteCount((c) => (wasUpvoted ? c - 1 : c + 1));
+
+    if (!wasUpvoted) {
+      const burstId = Date.now();
+      setBursts((b) => [...b, burstId]);
+      setTimeout(() => {
+        setBursts((b) => b.filter((id) => id !== burstId));
+      }, 1000);
+    }
 
     if (wasUpvoted) {
       const { error } = await supabase
@@ -136,9 +149,28 @@ export default function AnswerCard({ answer, isOwn }: AnswerCardProps) {
       <div className="mt-5 flex items-center gap-5 font-figtree text-xs text-brand-50/65">
         <button
           onClick={toggleUpvote}
-          className={`group/btn flex items-center gap-2 transition-colors ${upvoted ? "text-ember" : "hover:text-ember"}`}
+          className={`group/btn relative flex items-center gap-2 transition-colors ${upvoted ? "text-ember" : "hover:text-ember"}`}
         >
-          <Flame className="h-4 w-[14px]" />
+          {/* Sparks rise off the flame when a resonate lands */}
+          {bursts.map((burstId) => (
+            <span key={burstId} aria-hidden>
+              {SPARK_DRIFTS.map((dx, i) => (
+                <span
+                  key={i}
+                  className="ember-particle"
+                  style={
+                    {
+                      "--dx": `${dx}px`,
+                      animationDelay: `${i * 60}ms`,
+                    } as React.CSSProperties
+                  }
+                />
+              ))}
+            </span>
+          ))}
+          <Flame
+            className={`h-4 w-[14px] transition-transform duration-300 ${upvoted ? "scale-110" : ""}`}
+          />
           {upvoteCount > 0 ? upvoteCount : "Resonate"}
         </button>
 

@@ -6,8 +6,11 @@ import CommunityFeed from "@/components/community/CommunityFeed";
 import CampfireCountdown from "@/components/community/CampfireCountdown";
 import StreakBadge from "@/components/community/StreakBadge";
 import LockedFeedPreview from "@/components/community/LockedFeedPreview";
+import DyingFire from "@/components/community/DyingFire";
+import WelcomeBack from "@/components/community/WelcomeBack";
 import { getCampfireSnapshot } from "@/lib/campfire";
 import { computeStreak } from "@/lib/profileStats";
+import { fetchUnreadActivityCounts } from "@/lib/profileActivityFeed";
 
 function Embers() {
   return (
@@ -67,7 +70,7 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [snapshot, streak] = await Promise.all([
+  const [snapshot, streak, unreadCounts] = await Promise.all([
     getCampfireSnapshot(supabase, user?.id ?? null),
     user
       ? supabase
@@ -78,6 +81,9 @@ export default async function HomePage() {
             computeStreak((data ?? []).map((a) => a.created_at))
           )
       : Promise.resolve(0),
+    user
+      ? fetchUnreadActivityCounts(supabase, user.id)
+      : Promise.resolve({ resonates: 0, replies: 0 }),
   ]);
 
   if (!snapshot.ok) {
@@ -130,6 +136,7 @@ export default async function HomePage() {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <Embers />
       </div>
+      <DyingFire />
 
       {/* ── The Hero: the question, lit by the fire ── */}
       <section className="relative">
@@ -139,6 +146,8 @@ export default async function HomePage() {
         />
 
         <div className="relative mx-auto max-w-2xl px-5 pt-24 pb-10 text-center md:max-w-3xl md:px-8 md:pt-28 md:pb-14">
+          <WelcomeBack counts={unreadCounts} />
+
           {streak > 0 && (
             <div className="mb-6">
               <StreakBadge streak={streak} />
@@ -168,7 +177,9 @@ export default async function HomePage() {
       </section>
 
       {/* ── Locked: the circle you can't quite see yet ── */}
-      {!hasAnswered && <LockedFeedPreview count={answerCount} />}
+      {!hasAnswered && (
+        <LockedFeedPreview count={answerCount} questionId={question.id} />
+      )}
 
       {/* ── The Circle: voices flow as one continuous river ── */}
       {hasAnswered && user && (
@@ -181,7 +192,11 @@ export default async function HomePage() {
           </div>
 
           <section className="relative mx-auto max-w-2xl px-5 pb-32 md:max-w-3xl md:px-8 md:pb-40">
-            <CommunityFeed answers={answers} currentUserId={user.id} />
+            <CommunityFeed
+              answers={answers}
+              currentUserId={user.id}
+              questionId={question.id}
+            />
           </section>
         </>
       )}

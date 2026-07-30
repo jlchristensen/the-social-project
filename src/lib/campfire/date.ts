@@ -23,6 +23,27 @@ export function getCampfireDate(now: Date = new Date()): string {
 }
 
 /**
+ * Seconds until midnight on the campfire clock — when the fire goes out and
+ * the question rolls over. Derived from wall-clock parts in the campfire zone
+ * so daylight-saving shifts can't skew it.
+ */
+export function secondsUntilCampfireMidnight(now: Date = new Date()): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: CAMPFIRE_TIME_ZONE,
+    hourCycle: "h23",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(now);
+
+  const get = (type: string) =>
+    Number(parts.find((p) => p.type === type)?.value ?? 0);
+
+  const elapsed = get("hour") * 3600 + get("minute") * 60 + get("second");
+  return 24 * 3600 - elapsed;
+}
+
+/**
  * A campfire date rendered for display, e.g. "Friday, 18 July".
  *
  * Takes the `YYYY-MM-DD` string rather than a Date so the label always matches

@@ -9,6 +9,7 @@ import {
   fetchHasUnreadProfileActivity,
 } from "@/lib/profileActivityUnread";
 import type { User } from "@supabase/supabase-js";
+import CampfireMark from "@/components/layout/CampfireMark";
 
 /** Local design preview only — ignored in production builds. */
 const previewProfileNotificationDot =
@@ -173,10 +174,7 @@ export default function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-10">
         <Link href="/" className="group flex items-center gap-3">
-          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 transition-colors duration-500 group-hover:border-brand-200">
-            <span className="absolute inset-1 rounded-full bg-brand-200/85 transition-transform duration-500 group-hover:scale-90" />
-            <span className="absolute inset-[10px] rounded-full bg-brand-700" />
-          </span>
+          <CampfireMark className="h-7 w-7 -translate-y-0.5 transition-transform duration-500 group-hover:scale-110" />
           <span className="font-display text-lg leading-none tracking-tight text-white">
             The Social Project
           </span>

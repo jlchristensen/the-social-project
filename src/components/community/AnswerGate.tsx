@@ -102,6 +102,14 @@ export default function AnswerGate({
       return;
     }
 
+    // Leave a note for the feed: this render is THE unlock moment, so it
+    // should play the reveal ceremony instead of just appearing.
+    try {
+      sessionStorage.setItem("campfire-reveal", questionId);
+    } catch {
+      // Storage unavailable (private mode etc.) — the feed simply appears.
+    }
+
     setCelebrating(true);
     setTimeout(() => {
       router.refresh();

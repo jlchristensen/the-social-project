@@ -41,6 +41,20 @@ export interface Reply {
 }
 
 /**
+ * One night in a user's own history: the question they sat with and what they
+ * said. Powers the "your nights" archive.
+ */
+export interface Night {
+  question_id: string;
+  question_text: string;
+  /** The campfire date the question ran, `YYYY-MM-DD`. */
+  active_date: string;
+  body: string;
+  is_anonymous: boolean;
+  created_at: string;
+}
+
+/**
  * Result of a campfire read.
  *
  * The distinction that matters: `{ ok: true, data: null }` means "nothing is
