@@ -31,7 +31,7 @@ export default function MerchPage() {
         <span className="mt-10 block h-12 w-px bg-gradient-to-b from-transparent via-ember/60 to-transparent" />
 
         <Link
-          href="/community"
+          href="/"
           className="mt-10 inline-flex items-center gap-3 rounded-full border border-white/25 bg-white/[0.04] px-7 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm transition-colors duration-300 hover:border-white hover:bg-white/10"
         >
           Sit at the fire
