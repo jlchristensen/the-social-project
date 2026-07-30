@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
  * Set a new password after a recovery magic-link lands.
  *
  * Flow: reset email link → /auth/callback?next=/auth/update-password → here.
- * Code-based resets (6-digit OTP) stay on /sign-in and never hit this page.
+ * Code-based resets (email OTP) stay on /sign-in and never hit this page.
  */
 export default function UpdatePasswordPage() {
   const router = useRouter();
