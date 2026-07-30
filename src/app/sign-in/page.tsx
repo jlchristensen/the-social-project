@@ -8,9 +8,9 @@ import { createClient } from "@/lib/supabase/client";
 /**
  * Sign in + password reset.
  *
- * Reset matches the mobile app: email a 6-digit recovery code, then verify it
- * here and set a new password. Magic-link recovery still works via
- * /auth/callback → /auth/update-password when the email contains a link.
+ * Reset matches the mobile app: email a recovery OTP (Supabase sends 8 digits),
+ * then verify it here and set a new password. Magic-link recovery still works
+ * via /auth/callback → /auth/update-password when the email contains a link.
  */
 
 type Mode = "signIn" | "resetRequest" | "resetVerify";
@@ -82,7 +82,7 @@ export default function SignInPage() {
       return;
     }
 
-    setNotice(`We emailed a 6-digit code to ${email.trim()}.`);
+    setNotice(`We emailed a reset code to ${email.trim()}.`);
     setCode("");
     setPassword("");
     setMode("resetVerify");
@@ -146,8 +146,8 @@ export default function SignInPage() {
     mode === "signIn"
       ? "Sign in to your account to continue."
       : mode === "resetRequest"
-        ? "Enter your email and we'll send you a 6-digit code."
-        : `Check your email for the 6-digit code we sent to ${email.trim()}, then choose a new password.`;
+        ? "Enter your email and we'll send you an 8-digit code."
+        : `Check your email for the 8-digit code we sent to ${email.trim()}, then choose a new password.`;
 
   const onSubmit =
     mode === "signIn"
@@ -205,7 +205,7 @@ export default function SignInPage() {
                 htmlFor="code"
                 className="block text-sm font-medium text-brand-100 mb-1.5"
               >
-                6-digit code
+                8-digit code
               </label>
               <input
                 id="code"
@@ -215,12 +215,13 @@ export default function SignInPage() {
                 autoComplete="one-time-code"
                 value={code}
                 onChange={(e) =>
-                  setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  setCode(e.target.value.replace(/\D/g, "").slice(0, 8))
                 }
                 required
-                maxLength={6}
-                placeholder="123456"
-                className={`${inputClasses} tracking-[0.35em] text-center text-lg`}
+                maxLength={8}
+                minLength={6}
+                placeholder="12345678"
+                className={`${inputClasses} tracking-[0.25em] text-center text-lg`}
               />
             </div>
           )}

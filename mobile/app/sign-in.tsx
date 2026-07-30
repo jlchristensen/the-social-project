@@ -25,10 +25,11 @@ import { colors, radii, spacing } from "../theme";
  * redirects itself to the campfire; the redirect lives here rather than in a
  * callback so it fires no matter how the session arrives.
  *
- * Password reset uses a 6-digit CODE, not an email link. A link has to redirect
- * somewhere reachable (which breaks across localhost / phone / native), whereas
- * a code the user types works everywhere with no redirect at all: we email the
- * code, verify it with `verifyOtp(type: "recovery")`, then set the new password.
+ * Password reset uses an email OTP CODE (Supabase sends 8 digits), not a link.
+ * A link has to redirect somewhere reachable (which breaks across localhost /
+ * phone / native), whereas a code the user types works everywhere with no
+ * redirect at all: we email the code, verify it with `verifyOtp(type:
+ * "recovery")`, then set the new password.
  */
 
 type Mode = "signIn" | "signUp" | "resetRequest" | "resetVerify";
@@ -46,12 +47,12 @@ const COPY: Record<Mode, { h: string; s: string; cta: string }> = {
   },
   resetRequest: {
     h: "Reset your password",
-    s: "Enter your email and we'll send you a 6-digit code.",
+    s: "Enter your email and we'll send you an 8-digit code.",
     cta: "Send reset code",
   },
   resetVerify: {
     h: "Enter your code",
-    s: "Check your email for the 6-digit code, then choose a new password.",
+    s: "Check your email for the 8-digit code, then choose a new password.",
     cta: "Set new password",
   },
 };
@@ -86,7 +87,7 @@ export default function SignInScreen() {
     setError(null);
     setNotice(null);
 
-    // Reset, step 1 — email a 6-digit recovery code.
+    // Reset, step 1 — email a recovery OTP.
     if (isResetRequest) {
       if (!email.trim()) {
         setError("Enter your email.");
@@ -101,7 +102,7 @@ export default function SignInScreen() {
         setError(resetError.message);
         return;
       }
-      setNotice(`We emailed a 6-digit code to ${email.trim()}.`);
+      setNotice(`We emailed a reset code to ${email.trim()}.`);
       setCode("");
       setPassword("");
       setMode("resetVerify");
@@ -224,16 +225,16 @@ export default function SignInScreen() {
 
           {isResetVerify && (
             <>
-              <Text style={styles.label}>6-digit code</Text>
+              <Text style={styles.label}>8-digit code</Text>
               <TextInput
                 value={code}
                 onChangeText={setCode}
-                placeholder="123456"
+                placeholder="12345678"
                 placeholderTextColor={colors.pineMuted}
                 keyboardType="number-pad"
                 autoComplete="one-time-code"
                 textContentType="oneTimeCode"
-                maxLength={6}
+                maxLength={8}
                 style={[styles.input, styles.codeInput]}
               />
             </>
