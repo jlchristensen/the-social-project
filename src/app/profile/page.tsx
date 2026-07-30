@@ -7,6 +7,7 @@ import {
   fetchCampfireActivityForUser,
 } from "@/lib/profileActivityFeed";
 import { fetchProfileStatsForUser } from "@/lib/profileStats";
+import { getUserNights } from "@/lib/campfire";
 import {
   DEFAULT_VIBE_COLOR,
   isVibeColorKey,
@@ -16,6 +17,7 @@ import {
 import ProfileHero from "./ProfileHero";
 import ProfileStatsRow from "./ProfileStats";
 import ProfileActivityMarker from "./ProfileActivityMarker";
+import YourNights from "./YourNights";
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -31,10 +33,11 @@ export default async function ProfilePage() {
     redirect("/sign-in");
   }
 
-  const [profileRes, activityItems, stats] = await Promise.all([
+  const [profileRes, activityItems, stats, nightsResult] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     fetchCampfireActivityForUser(supabase, user.id),
     fetchProfileStatsForUser(supabase, user.id),
+    getUserNights(supabase, user.id),
   ]);
 
   const profile = profileRes.data;
@@ -69,6 +72,8 @@ export default async function ProfilePage() {
         <ProfileStatsRow stats={stats} vibe={vibe} />
 
         <ProfileActivityFeed rows={activityRows} />
+
+        <YourNights nights={nightsResult.ok ? nightsResult.data : []} />
 
         <ProfileActivityMarker />
       </div>

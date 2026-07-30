@@ -42,19 +42,39 @@ export default function CommunityFeed({
 
   // ── The unlock reveal: play the ceremony only right after answering ──
   const [revealing, setRevealing] = useState(false);
+  // The night's most resonant voice at the moment of unlock. Chosen once and
+  // kept for the visit, so the crowned card doesn't jump around afterwards.
+  const [spotlightId, setSpotlightId] = useState<string | null>(null);
   useEffect(() => {
     try {
       if (sessionStorage.getItem("campfire-reveal") === questionId) {
         sessionStorage.removeItem("campfire-reveal");
+
+        const top = answers.reduce<Answer | null>(
+          (best, a) =>
+            a.user_id !== currentUserId &&
+            a.upvote_count > 0 &&
+            a.upvote_count > (best?.upvote_count ?? 0)
+              ? a
+              : best,
+          null
+        );
+        setSpotlightId(top?.id ?? null);
         setRevealing(true);
+
         // The class only needs to exist while the animation plays; dropping it
         // after keeps later re-sorts and refreshes from replaying the reveal.
-        const timer = window.setTimeout(() => setRevealing(false), 2600);
+        const timer = window.setTimeout(
+          () => setRevealing(false),
+          top ? 4600 : 2600
+        );
         return () => window.clearTimeout(timer);
       }
     } catch {
       // Storage unavailable — no ceremony, feed just shows.
     }
+    // The answers snapshot present at unlock is exactly the one to crown from.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionId]);
 
   // ── The live fire: notice when new voices join and pull them in ──
@@ -108,6 +128,17 @@ export default function CommunityFeed({
   const otherAnswers = answers.filter((a) => a.user_id !== currentUserId);
   const sortedOthers = sortAnswers(otherAnswers, sortMode);
 
+  // ── The spotlight: at the unlock, the night's most resonant voice steps
+  // forward first, held for a beat before the rest of the circle follows. ──
+  const spotlight = spotlightId
+    ? (sortedOthers.find((a) => a.id === spotlightId) ?? null)
+    : null;
+  const revealRest = spotlight
+    ? sortedOthers.filter((a) => a.id !== spotlight.id)
+    : sortedOthers;
+  /** With a spotlight, everything else waits for its moment to finish. */
+  const restBaseDelayMs = revealing && spotlight ? 1500 : 0;
+
   const tabs: { key: SortMode; label: string }[] = [
     { key: "top", label: "Most resonant" },
     { key: "new", label: "Latest" },
@@ -117,7 +148,9 @@ export default function CommunityFeed({
   /** Stagger the melt so the circle opens card by card, not all at once. */
   function revealStyle(index: number): React.CSSProperties | undefined {
     if (!revealing) return undefined;
-    return { animationDelay: `${Math.min(index * 130, 1200)}ms` };
+    return {
+      animationDelay: `${restBaseDelayMs + Math.min(index * 130, 1200)}ms`,
+    };
   }
 
   function cardClass(id: string): string | undefined {
@@ -159,12 +192,25 @@ export default function CommunityFeed({
         </p>
       ) : (
         <div className="columns-1 gap-5">
+          {spotlight && (
+            <div
+              className={`mb-5 ${revealing ? "circle-reveal" : ""}`}
+              style={revealing ? { animationDelay: "150ms" } : undefined}
+            >
+              <p className="mb-3 text-center font-figtree text-[10px] font-medium uppercase tracking-[0.32em] text-ember/80">
+                Tonight&rsquo;s most resonant voice
+              </p>
+              <div className="rounded-[24px] p-[1px] [background:linear-gradient(140deg,rgba(245,210,139,0.5),rgba(232,184,106,0.08),rgba(245,210,139,0.35))] shadow-[0_0_50px_-12px_rgba(232,184,106,0.4)] [&_article]:mb-0">
+                <AnswerCard answer={spotlight} isOwn={false} />
+              </div>
+            </div>
+          )}
           {ownAnswer && (
             <div className={cardClass(ownAnswer.id)} style={revealStyle(1)}>
               <AnswerCard answer={ownAnswer} isOwn />
             </div>
           )}
-          {sortedOthers.map((answer, i) => (
+          {revealRest.map((answer, i) => (
             <div
               key={answer.id}
               className={cardClass(answer.id)}

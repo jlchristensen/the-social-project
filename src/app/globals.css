@@ -376,6 +376,23 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────
+   Dying fire — in the last stretch before midnight the embers
+   fade and the aura pulls in. Driven by <DyingFire/> via a
+   body attribute so the whole scene responds together.
+   ──────────────────────────────────────────────────────────── */
+/* Container-level opacity/filter: the child animations own their
+   opacity keyframes, so overrides must sit one level up. */
+body[data-fire-dying] .campfire-embers {
+  opacity: 0.35;
+  transition: opacity 3s ease;
+}
+
+body[data-fire-dying] .campfire-aura {
+  filter: blur(40px) brightness(0.55);
+  transition: filter 3s ease;
+}
+
+/* ────────────────────────────────────────────────────────────
    Respect reduced motion for everything decorative.
    ──────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

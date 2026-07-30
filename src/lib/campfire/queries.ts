@@ -4,6 +4,7 @@ import type {
   Answer,
   CampfireSnapshot,
   DailyQuestion,
+  Night,
   Outcome,
   Reply,
 } from "./types";
@@ -263,6 +264,55 @@ export async function getAnswersWithMeta(
   });
 
   return { ok: true, data: answers };
+}
+
+/**
+ * Every night this user has answered, newest first — their own answers joined
+ * to the questions they answered. Only ever the caller's own rows (RLS lets a
+ * user read their own answers regardless of the nightly gate), so this is a
+ * private journal, not a public feed.
+ */
+export async function getUserNights(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<Outcome<Night[]>> {
+  const { data: answers, error } = await supabase
+    .from("answers")
+    .select("question_id, body, is_anonymous, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) return { ok: false, error: error.message };
+  if (!answers || answers.length === 0) return { ok: true, data: [] };
+
+  const questionIds = [...new Set(answers.map((a) => a.question_id))];
+  const { data: questions, error: questionsError } = await supabase
+    .from("daily_questions")
+    .select("id, question_text, active_date")
+    .in("id", questionIds);
+
+  if (questionsError) return { ok: false, error: questionsError.message };
+
+  const questionById = new Map(
+    (questions ?? []).map((q) => [
+      q.id,
+      { question_text: q.question_text, active_date: q.active_date },
+    ])
+  );
+
+  const nights: Night[] = answers.map((a) => {
+    const q = questionById.get(a.question_id);
+    return {
+      question_id: a.question_id,
+      question_text: q?.question_text ?? "A question from a past night",
+      active_date: q?.active_date ?? a.created_at.slice(0, 10),
+      body: a.body,
+      is_anonymous: a.is_anonymous,
+      created_at: a.created_at,
+    };
+  });
+
+  return { ok: true, data: nights };
 }
 
 /** Replies to a single answer, with display names joined in. */

@@ -174,7 +174,7 @@ export default function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-10">
         <Link href="/" className="group flex items-center gap-3">
-          <CampfireMark className="h-9 w-9 transition-transform duration-500 group-hover:scale-110" />
+          <CampfireMark className="h-7 w-7 -translate-y-0.5 transition-transform duration-500 group-hover:scale-110" />
           <span className="font-display text-lg leading-none tracking-tight text-white">
             The Social Project
           </span>

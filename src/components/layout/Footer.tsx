@@ -28,7 +28,7 @@ export default function Footer() {
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <Link href="/" className="group inline-flex items-center gap-3">
-            <CampfireMark className="h-8 w-8 transition-transform duration-500 group-hover:scale-110" />
+            <CampfireMark className="h-6 w-6 -translate-y-0.5 transition-transform duration-500 group-hover:scale-110" />
             <span className="font-display text-lg tracking-tight text-brand-50">
               The Social Project
             </span>
