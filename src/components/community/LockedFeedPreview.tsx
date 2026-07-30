@@ -1,9 +1,15 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
 /**
  * The blurred circle — hazy placeholder cards behind the answer gate.
  *
  * SECURITY: these cards are pure decoration. Real answers never reach the
  * client until the viewer has answered (enforced server-side by RLS), so the
- * only true datum here is the count. The shapes are fixed fakes.
+ * only true datum here is the count — read live through the public
+ * `campfire_answer_count` function, which exposes nothing but the number.
  */
 
 const PLACEHOLDER_SHAPES: { name: number; lines: number[] }[] = [
@@ -13,7 +19,51 @@ const PLACEHOLDER_SHAPES: { name: number; lines: number[] }[] = [
   { name: 72, lines: [90, 55] },
 ];
 
-export default function LockedFeedPreview({ count }: { count: number }) {
+/** How often the locked screen checks whether more voices have joined. */
+const HEARTBEAT_MS = 25_000;
+
+interface LockedFeedPreviewProps {
+  count: number;
+  questionId: string;
+}
+
+export default function LockedFeedPreview({
+  count: initialCount,
+  questionId,
+}: LockedFeedPreviewProps) {
+  const [count, setCount] = useState(initialCount);
+  // Changing the key restarts the pulse animation each time the count grows.
+  const [pulseKey, setPulseKey] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let cancelled = false;
+
+    async function heartbeat() {
+      const { data, error } = await supabase.rpc("campfire_answer_count", {
+        p_question_id: questionId,
+      });
+      if (cancelled || error || typeof data !== "number") return;
+      setCount((prev) => {
+        if (data > prev) setPulseKey((k) => k + 1);
+        return Math.max(prev, data);
+      });
+    }
+
+    const interval = window.setInterval(heartbeat, HEARTBEAT_MS);
+
+    function onVisible() {
+      if (document.visibilityState === "visible") void heartbeat();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [questionId]);
+
   if (count < 1) return null;
 
   const cards = PLACEHOLDER_SHAPES.slice(0, Math.min(count, 4));
@@ -29,7 +79,12 @@ export default function LockedFeedPreview({ count }: { count: number }) {
     >
       {/* Overlay label sits above the haze */}
       <div className="pointer-events-none absolute inset-x-0 top-10 z-10 flex justify-center px-5">
-        <span className="rounded-full border border-ember/30 bg-[#06160d]/80 px-5 py-2.5 font-serif text-base italic text-ember backdrop-blur-sm md:text-lg">
+        <span
+          key={pulseKey}
+          className={`rounded-full border border-ember/30 bg-[#06160d]/80 px-5 py-2.5 font-serif text-base italic text-ember backdrop-blur-sm md:text-lg ${
+            pulseKey > 0 ? "count-pulse" : ""
+          }`}
+        >
           {label} — answer to unlock
         </span>
       </div>

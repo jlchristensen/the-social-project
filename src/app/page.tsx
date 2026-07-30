@@ -168,7 +168,9 @@ export default async function HomePage() {
       </section>
 
       {/* ── Locked: the circle you can't quite see yet ── */}
-      {!hasAnswered && <LockedFeedPreview count={answerCount} />}
+      {!hasAnswered && (
+        <LockedFeedPreview count={answerCount} questionId={question.id} />
+      )}
 
       {/* ── The Circle: voices flow as one continuous river ── */}
       {hasAnswered && user && (
@@ -181,7 +183,11 @@ export default async function HomePage() {
           </div>
 
           <section className="relative mx-auto max-w-2xl px-5 pb-32 md:max-w-3xl md:px-8 md:pb-40">
-            <CommunityFeed answers={answers} currentUserId={user.id} />
+            <CommunityFeed
+              answers={answers}
+              currentUserId={user.id}
+              questionId={question.id}
+            />
           </section>
         </>
       )}
