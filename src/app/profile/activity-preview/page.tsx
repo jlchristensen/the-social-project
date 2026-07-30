@@ -63,7 +63,7 @@ export default function ProfileActivityPreviewPage() {
 
           <div className="flex flex-col gap-2.5">
             <Link
-              href="/community"
+              href="/"
               className={`${notifBase} ${notifUnread}`}
             >
               <div className="mb-1.5 flex items-center gap-2">
@@ -91,7 +91,7 @@ export default function ProfileActivityPreviewPage() {
             </Link>
 
             <Link
-              href="/community"
+              href="/"
               className={`${notifBase} ${notifUnread}`}
             >
               <div className="mb-1.5 flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function ProfileActivityPreviewPage() {
               </div>
             </Link>
 
-            <Link href="/community" className={notifBase}>
+            <Link href="/" className={notifBase}>
               <div className="mb-1.5 flex items-center gap-2">
                 <span className="rounded-full border border-brand-50/20 px-2 py-0.5 font-figtree text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-50/75">
                   Reply

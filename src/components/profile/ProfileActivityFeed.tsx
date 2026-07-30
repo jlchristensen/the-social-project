@@ -47,7 +47,7 @@ function ActivityRow({ item }: { item: ProfileActivityDisplayRow }) {
   return (
     <li>
       <Link
-        href="/community"
+        href="/"
         className="block rounded-xl border border-brand-50/10 bg-white/[0.02] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-ember/30 hover:shadow-[0_12px_40px_-24px_rgba(232,184,106,0.3)]"
       >
         <div className="mb-1.5 flex flex-wrap items-center gap-2">
@@ -143,7 +143,7 @@ export default function ProfileActivityFeed({ rows }: ProfileActivityFeedProps) 
             Campfire post, it will show up here.
           </p>
           <Link
-            href="/community"
+            href="/"
             className="mt-4 inline-block font-figtree text-xs font-semibold uppercase tracking-[0.12em] text-ember transition-colors hover:text-ember-hot"
           >
             Go to the Campfire →
