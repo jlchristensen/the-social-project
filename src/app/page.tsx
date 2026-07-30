@@ -28,12 +28,11 @@ function Whisper() {
         What is this?
       </span>
       <p className="mt-6 font-serif text-xl leading-relaxed text-brand-50/85 md:text-2xl">
-        One question, every night. Answer honestly and the circle opens — you
-        see what everyone else said.
+        Every night, one question gets asked around this fire. Answer it
+        honestly, and you&rsquo;ll see what everyone else said.
       </p>
       <p className="mt-4 font-figtree text-sm leading-relaxed text-brand-50/55">
-        No feeds. No followers. No scrolling. The Social Project is a nightly
-        ritual for real connection.
+        That&rsquo;s it. That&rsquo;s the whole thing.
       </p>
       <Link
         href="/sign-up"
