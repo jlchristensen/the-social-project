@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif, Figtree } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
+import { SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,29 +36,29 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "The Social Project — One Question, Every Night",
+  title: "The Social Project · One Question, Every Night",
   description:
-    "One honest question every night. Answer it, and the circle opens — see what everyone else said. A nightly ritual for real connection.",
-  metadataBase: new URL("https://main.d1jaykgbbddd26.amplifyapp.com"),
+    "One honest question every night. Answer it, and the circle opens: see what everyone else said. A nightly ritual for real connection.",
+  metadataBase: new URL(SITE_URL),
   openGraph: {
-    title: "The Social Project — One Question, Every Night",
+    title: "The Social Project · One Question, Every Night",
     description:
       "One honest question every night. Answer it, and the circle opens. A nightly ritual for real connection.",
-    url: "https://main.d1jaykgbbddd26.amplifyapp.com",
+    url: SITE_URL,
     siteName: "The Social Project",
     images: [
       {
         url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: "The Social Project — One Question, Every Night",
+        alt: "The Social Project · One Question, Every Night",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Social Project — One Question, Every Night",
+    title: "The Social Project · One Question, Every Night",
     description:
       "One honest question every night. Answer it, and the circle opens. A nightly ritual for real connection.",
     images: ["/images/og-image.png"],

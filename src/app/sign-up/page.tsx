@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { readSignupSourceCookie } from "@/lib/signupSource";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -33,6 +34,10 @@ export default function SignUpPage() {
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        // Which channel brought them here. No cookie means "direct".
+        data: { signup_source: readSignupSourceCookie() },
+      },
     });
 
     setLoading(false);

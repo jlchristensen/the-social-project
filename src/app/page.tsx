@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import ShareQuestion from "@/components/community/ShareQuestion";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import DailyQuestion from "@/components/community/DailyQuestion";
 import AnswerGate from "@/components/community/AnswerGate";
 import CommunityFeed from "@/components/community/CommunityFeed";
@@ -8,7 +11,7 @@ import StreakBadge from "@/components/community/StreakBadge";
 import LockedFeedPreview from "@/components/community/LockedFeedPreview";
 import DyingFire from "@/components/community/DyingFire";
 import WelcomeBack from "@/components/community/WelcomeBack";
-import { getCampfireSnapshot } from "@/lib/campfire";
+import { getCampfireDate, getCampfireSnapshot, getDailyQuestion } from "@/lib/campfire";
 import { computeStreak } from "@/lib/profileStats";
 import { fetchUnreadActivityCounts } from "@/lib/profileActivityFeed";
 
@@ -54,6 +57,47 @@ function Whisper() {
       </Link>
     </section>
   );
+}
+
+/**
+ * When the link gets texted, the preview shows tonight's question, not a
+ * generic banner. The image URL carries the date so chat apps, which cache
+ * previews by URL, show each night's question instead of the first one ever
+ * shared. Falls back to the site-wide preview from the layout on a quiet night.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const date = getCampfireDate();
+  const result = await getDailyQuestion(await createClient(), date);
+  const question = result.ok ? result.data?.question_text : null;
+  if (!question) return {};
+
+  const description =
+    "Tonight's question on The Social Project. Answer it honestly and see what everyone else said.";
+  const image = {
+    url: `/og/${date}`,
+    width: 1200,
+    height: 630,
+    alt: `Tonight's question: ${question}`,
+  };
+
+  return {
+    title: `${question} · ${SITE_NAME}`,
+    description,
+    openGraph: {
+      title: question,
+      description,
+      url: SITE_URL,
+      siteName: SITE_NAME,
+      images: [image],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: question,
+      description,
+      images: [image.url],
+    },
+  };
 }
 
 /**
@@ -172,6 +216,10 @@ export default async function HomePage() {
 
           <div className="mt-10">
             <CampfireCountdown />
+          </div>
+
+          <div className="mt-6">
+            <ShareQuestion question={question.question_text} />
           </div>
         </div>
       </section>
